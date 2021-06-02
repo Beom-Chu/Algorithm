@@ -10,9 +10,11 @@
 2---4   6--8
 
  */
-package algorithm;
+package test;
 
 import org.junit.jupiter.api.Test;
+
+import algorithm.Dfs;
 
 class DfsTest {
 

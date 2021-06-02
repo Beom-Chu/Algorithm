@@ -15,7 +15,7 @@ package algorithm;
 import java.util.LinkedList;
 import java.util.Queue;
 
-class Bfs {
+public class Bfs {
 	Node[] nodes;
 	
 	class Node {
@@ -36,7 +36,7 @@ class Bfs {
 		
 	}
 	
-	Bfs(int size){
+	public Bfs(int size){
 		nodes = new Node[size];
 		
 		for(int i=0; i<size; i++) {
@@ -44,7 +44,7 @@ class Bfs {
 		}
 	}
 	
-	void connectNode(int i1, int i2) {
+	public void connectNode(int i1, int i2) {
 		Node n1 = nodes[i1];
 		Node n2 = nodes[i2];
 		if(!n1.connNode.contains(n2)) n1.connNode.add(n2);
@@ -73,7 +73,7 @@ class Bfs {
 		}
 	}
 	
-	void bfs() {
+	public void bfs() {
 		bfs(0);
 	}
 }

@@ -36,21 +36,21 @@ public class Dfs {
 		}
 	}
 	
-	Dfs(int size) {
+	public Dfs(int size) {
 		nodes = new Node[size];
 		for(int i=0; i<size; i++) {
 			nodes[i] = new Node(i);
 		}
 	}
 	
-	void connectNode(int i1, int i2) {
+	public void connectNode(int i1, int i2) {
 		Node n1 = nodes[i1];
 		Node n2 = nodes[i2];
 		if(!n1.connNode.contains(n2)) n1.connNode.add(n2);
 		if(!n2.connNode.contains(n1)) n2.connNode.add(n1);
 	}
 	
-	void dfs(int start) {
+	public void dfs(int start) {
 		Stack<Node> stk = new Stack<Node>();
 		
 		Node root = nodes[start];
@@ -71,12 +71,12 @@ public class Dfs {
 		}
 	}
 	
-	void dfs() {
+	public void dfs() {
 		dfs(0);
 	}
 	
 	/*재귀*/
-	void recursive(Node root) {
+	public void recursive(Node root) {
 		
 		root.chk = true;
 
