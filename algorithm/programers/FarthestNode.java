@@ -22,55 +22,82 @@ n	vertex	return
  */
 package algorithm.programers;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
 
 public class FarthestNode {
 	
 	public Node[] nodes;
 	
-	List rtn = new ArrayList<>();
-	
     public int solution(int n, int[][] edge) {
+    	
         int answer = 0;
-        
-        nodes = new Node[n+1];
+        nodes = new Node[n];
+        Queue<Node> que = new LinkedList<>();
 		
-		for(int i=1; i<=n; i++) {
-			nodes[i] = new Node(i);
+        /* 노드객체 생성 */
+		for(int i=0; i<n; i++) {
+			nodes[i] = new Node(i+1);
 		}
 		
+		/* 노드 연결 */
 		for(int i=0; i<edge.length; i++) {
 			connectNode(edge[i][0], edge[i][1]);
 		}
 		
-		for(Node node : nodes)System.out.println(node);
+		/* 너비우선탐색 사용 */
+		nodes[0].chk = true;
+		que.add(nodes[0]);
 		
-        
+		while(!que.isEmpty()) {
+			
+			Node root = que.poll();
+			
+			for(Node cnnNode : root.cnnNodes) {
+				if(!cnnNode.chk) {
+					cnnNode.chk = true;
+					cnnNode.bfNodes.addAll(root.bfNodes); /* 지나온 노드 등록 */
+					que.add(cnnNode);
+				}
+			}
+		}
+		
+		/* 최장거리 */
+		int maxDistance = Arrays.stream(nodes).mapToInt(i ->i.bfNodes.size()).max().getAsInt();
+				
+		for(Node node : nodes) {
+			if(maxDistance == node.bfNodes.size()) answer++;
+		}
+		
         return answer;
     }
 	
+    /* 노드 */
     class Node{
+    	
     	int no;
     	boolean chk;
-    	LinkedList<Node> cnnNodes;
-    	
+    	LinkedList<Node> cnnNodes = new LinkedList<>();;
+    	HashSet<Integer> bfNodes = new HashSet<>();
+
     	Node(int no){
     		this.no = no;
     		chk = false;
-    		cnnNodes = new LinkedList<>();
+    		bfNodes.add(no);
     	}
     	
     	@Override
     	public String toString() {
-    		return String.format("%n, %s", nodes);
+    		return String.format("no:%s, chk:%s, cnnNode.size:%s, bfNodes:%s", no, chk, cnnNodes.size(),bfNodes);
     	}
     }
     
+    /* 노드 연결 */
     void connectNode(int n1, int n2){
-    	Node node1 = nodes[n1];
-    	Node node2 = nodes[n2];
+    	Node node1 = nodes[n1-1];
+    	Node node2 = nodes[n2-1];
     	if(!node1.cnnNodes.contains(node2)) node1.cnnNodes.add(node2);
     	if(!node2.cnnNodes.contains(node1)) node2.cnnNodes.add(node1);
     }
