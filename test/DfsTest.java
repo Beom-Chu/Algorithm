@@ -12,16 +12,19 @@
  */
 package test;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import algorithm.Dfs;
 
 class DfsTest {
-
-	@Test
-	void testDfs() {
-
-		Dfs dfs = new Dfs(9);
+	
+	Dfs dfs;
+	
+	@BeforeEach
+	void setNode() {
+		dfs = new Dfs(9);
 		dfs.connectNode(0, 1);
 		dfs.connectNode(1, 2);
 		dfs.connectNode(1, 3);
@@ -32,8 +35,19 @@ class DfsTest {
 		dfs.connectNode(5, 7);
 		dfs.connectNode(5, 6);
 		dfs.connectNode(6, 8);
+	}
+	
+	@Test
+	@DisplayName("깊이우선탐색_Stack")
+	void testDfs() {
 		
-//		dfs.dfs();
+		dfs.dfs();
+	}
+
+	@Test
+	@DisplayName("깊이우선탐색_재귀")
+	void testDfs2() {
+		
 		dfs.recursive();
 	}
 

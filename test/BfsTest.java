@@ -12,17 +12,20 @@
  */
 package test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import algorithm.Bfs;
 
 class BfsTest {
-
-	@Test
-	void testBfs() {
-		Bfs bfs = new Bfs(9);
+	
+	Bfs bfs;
+	
+	@BeforeEach
+	void setNode() {
+		
+		bfs = new Bfs(9);
 		bfs.connectNode(0, 1);
 		bfs.connectNode(1, 2);
 		bfs.connectNode(1, 3);
@@ -33,8 +36,14 @@ class BfsTest {
 		bfs.connectNode(5, 6);
 		bfs.connectNode(5, 7);
 		bfs.connectNode(6, 8);
+	}
+	
+	@Test
+	@DisplayName("테스트 실행")
+	void testBfs() {
 		
 		bfs.bfs();
+		
 	}
 
 
