@@ -31,7 +31,7 @@
 5
 67863915
 
-조합 사용
+조합 경우의 수 사용
 n! / r!(n-r)!
 
 M! / N!(M-N)!
@@ -55,19 +55,28 @@ public class LayingBridge {
 			int T = Integer.valueOf(reader.readLine());
 			
 			while(T-- > 0) {
+				
 				String[] arrS = reader.readLine().split(" ");
-				printNumber(arrS[0], arrS[1]);
+				
+				printNumber(arrS[1], arrS[0]);
 			}
 		}
-		
 	}
 	
-	static void printNumber(String N, String M) {
-		combination(Long.valueOf(N), Long.valueOf(M));
+	/* 경우의수 출력 */
+	static void printNumber(String n, String r) {
+		System.out.println(combination(Long.valueOf(n), Long.valueOf(r)));
 	}
-
-	static void combination(long N, long M) {
-
+	
+	/* 조합 */
+	static long combination(long n, long r) {
 		
+		if(n == r || r == 0) {
+			return 1; 
+		}
+		else {
+			return combination(n-1, r-1) + combination(n-1, r);
+		}
+		 
 	}
 }
