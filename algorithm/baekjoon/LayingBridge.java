@@ -36,47 +36,49 @@ n! / r!(n-r)!
 
 M! / N!(M-N)!
 
+성능을 위해서 메모이제이션 활용
+
 */
 package algorithm.baekjoon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class LayingBridge {
-
+	
+	static int[][] memo = new int[30][30];
+	
 	public static void main(String[] args) throws IOException {
 		
-		try(
-			InputStreamReader isr = new InputStreamReader(System.in);
-			BufferedReader reader = new BufferedReader(isr);
-			)
-		{
-			int T = Integer.valueOf(reader.readLine());
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		
+		int T = Integer.valueOf(reader.readLine());
+		
+		while(T-- > 0) {
 			
-			while(T-- > 0) {
-				
-				String[] arrS = reader.readLine().split(" ");
-				
-				printNumber(arrS[1], arrS[0]);
-			}
+			StringTokenizer stoken = new StringTokenizer(reader.readLine());
+			
+			printNumber(stoken.nextToken(), stoken.nextToken());
 		}
 	}
 	
 	/* 경우의수 출력 */
-	static void printNumber(String n, String r) {
-		System.out.println(combination(Long.valueOf(n), Long.valueOf(r)));
+	static void printNumber(String r, String n) {
+		System.out.println(combination(Integer.valueOf(n), Integer.valueOf(r)));
 	}
 	
 	/* 조합 */
-	static long combination(long n, long r) {
+	static int combination(int n, int r) {
+		
+		if(memo[n][r]>0) return memo[n][r];
 		
 		if(n == r || r == 0) {
-			return 1; 
+			return memo[n][r] = 1; 
 		}
 		else {
-			return combination(n-1, r-1) + combination(n-1, r);
+			return memo[n][r] = combination(n-1, r-1) + combination(n-1, r);
 		}
-		 
 	}
 }
