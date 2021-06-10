@@ -14,7 +14,8 @@
 예제 입력 2 
 0
 예제 출력 2 
-1*/
+1
+*/
 package algorithm.baekjoon;
 
 import java.util.*;
@@ -22,25 +23,23 @@ import java.util.*;
 public class Factorial {
 
 	public static void main(String[] args) {
-		long fr = System.currentTimeMillis();
 		
 		try(Scanner sc = new Scanner(System.in)){
 			
-//			int N = sc.nextInt();
-//			System.out.println(factorial(N));
-			/* 재귀함수가 속도가 더 느림 */
-			
 			int N = sc.nextInt();
-			int rtn = 1;
-			for(int i=2; i<=N; i++) rtn *= i;
 			
-			System.out.println(rtn);
+			long fr = System.currentTimeMillis();
+			
+		
+			System.out.println(factorial(N));
+			
+			System.out.println("tiem : "+(System.currentTimeMillis()-fr));
 		}
-		System.out.println(System.currentTimeMillis()-fr);
+		
 	}
 	
 	static public int factorial(int N) {
-		if(N==1) return 1;
+		if(N<=1) return 1;
 		
 		return N * factorial(N-1);
 	}
