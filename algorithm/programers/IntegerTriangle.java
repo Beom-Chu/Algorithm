@@ -52,7 +52,7 @@ public class IntegerTriangle {
 			
 			for(int j=1; j<i+1; j++) {
 				
-				dp[i][j] = triangle[i][j] + Math.max(dp[i-1][j-1], dp[i-1][j]);
+				dp[i][j] = Math.max(dp[i-1][j-1], dp[i-1][j]) + triangle[i][j];
 			}
 		}
 		
