@@ -82,11 +82,12 @@ Explanation 1
 
 
 
-속도 문제로 인해 최적화 필요..
+equal_old => 속도 문제로 인해 최적화 필요..
 
 하나를 제외한 나머지에 더해주는 방법 말고
-하나의 원소만 빼주는 방법으로 수정 예정.
+하나의 원소만 빼주는 방법으로 수정.
 
+훨씬 간결해짐.
 
  */
 
@@ -94,21 +95,62 @@ package algorithm.hackerrank;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Equal {
 	static public void main(String[] args) {
 		
-		List<Integer> li = Arrays.asList(2,2,3,7);
+//		List<Integer> li = Arrays.asList(2,2,3,7);
 //		List<Integer> li = Arrays.asList(53,361,188,665,786,898,447,562,272,123,229,629,670,848,994,54,822,46,208,17,449,302,466,832,931,778,156,39,31,777,749,436,138,289,453,276,539,901,839,811,24,420,440,46,269,786,101,443,832,661,460,281,964,278,465,247,408,622,638,440,751,739,876,889,380,330,517,919,583,356,83,959,129,875,5,750,662,106,193,494,120,653,128,84,283,593,683,44,567,321,484,318,412,712,559,792,394,77,711,977,785,146,936,914,22,942,664,36,400,857);
-		
+		List<Integer> li = Arrays.asList(1,5,5); /*3*/
 		
 		System.out.println(equal(li));
 		
 	}
 	
 	public static int equal(List<Integer> arr) {
+		
+		List<Integer> cnt = new ArrayList<>();
+		int min = Collections.min(arr);
+		
+		cnt.add(getCnt(arr, min));
+		
+		//최소값 기준을 차감 후 계산했을때 더 작은 횟수가 나올수도 있음
+		cnt.add(getCnt(arr, min-5));
+		cnt.add(getCnt(arr, min-2));
+		cnt.add(getCnt(arr, min-1));
+		
+		return Collections.min(cnt);
+	}
+	
+	public static int getCnt(List<Integer> arr, int min) {
+		
+		int cnt = 0;
+		
+		for(int i : arr) {
+			
+			//최소값과의 차이를 줄이기 위해 차감 되어지는 갯수
+			int diff = i - min;
+			cnt += (diff/5) + (diff%5)/2 + (diff%5%2);
+		}
+		
+		return cnt;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+	public static int equal_old(List<Integer> arr) {
         
 		int cnt = 0;
 		boolean loop = true;
