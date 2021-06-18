@@ -23,12 +23,12 @@ class DiskControllerTest {
   }
   
   @BeforeEach
-  static void beforeEach(){
+  void beforeEach(){
     st = System.currentTimeMillis();
   }
   
   @AfterEach
-  static void afterEach() {
+  void afterEach() {
     System.out.println(System.currentTimeMillis()-st);
   }
   
