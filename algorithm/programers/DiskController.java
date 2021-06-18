@@ -126,25 +126,35 @@ public class DiskController {
   
   
   
-  public int solution_old(int[][] jobs) {
-    int answer=0, idx=0, ms=0;
-    Queue<int[]> pq = new PriorityQueue<int[]>((i1,i2)->i1[1]-i2[1]);
-    Arrays.sort(jobs, (i1, i2) -> i1[0] - i2[0]);
+  public int solution2(int[][] jobs) {
+
+    int time = 0, idx = 0, curTime = 0;
     
-    while(idx<jobs.length || !pq.isEmpty()) {
-        while(idx<jobs.length && ms>=jobs[idx][0]) {
-            pq.add(jobs[idx++]);
-        }
+    Queue<int[]> pq = new PriorityQueue<int[]>((i1, i2) -> i1[1] - i2[1]); //소요시간 순
+    Arrays.sort(jobs, (i1, i2) -> i1[0] - i2[0]); //실행시간 순
+
+    while (idx < jobs.length || !pq.isEmpty()) {
+
+      //현재시간보다 작은 시작시간을 가진 Job을 큐에 등록
+      while (idx < jobs.length && curTime >= jobs[idx][0]) {
+        pq.add(jobs[idx]);
+        idx++;
+      }
+
+      if (pq.isEmpty()) {
         
-        if(pq.isEmpty()) {
-            ms = jobs[idx][0];
-        } else {
-            int[] job = pq.poll();
-            ms += job[1];
-            answer += ms - job[0];
-        }
+        //큐가 빈 경우 다음 실행순서인 Job의 시작시간을 현재시간으로 설정
+        curTime = jobs[idx][0];
+        
+      } else {
+        
+        int[] job = pq.poll();
+        curTime += job[1];          //현재시간 = 현재시간+Job소요시간
+        time += curTime - job[0];   //전체소요시간 = 전체소요시간+현재시간-Job시작시간
+      }
+      
     }
-    
-    return answer/jobs.length;
-}
+
+    return time / jobs.length;
+  }
 }
