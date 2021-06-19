@@ -1,7 +1,9 @@
 package algorithm.programers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.LinkedList;
 import java.util.Queue;
+import org.junit.jupiter.api.Test;
 /*다리를 지나는 트럭 */
 /*트럭 여러 대가 강을 가로지르는 일 차선 다리를 정해진 순으로 건너려 합니다. 모든 트럭이 다리를 건너려면 최소 몇 초가 걸리는지 알아내야 합니다. 트럭은 1초에 1만큼 움직이며, 다리 길이는 bridge_length이고 다리는 무게 weight까지 견딥니다.
 ※ 트럭이 다리에 완전히 오르지 않은 경우, 이 트럭의 무게는 고려하지 않습니다.
@@ -26,36 +28,50 @@ weight는 1 이상 10,000 이하입니다.
 truck_weights의 길이는 1 이상 10,000 이하입니다.
 모든 트럭의 무게는 1 이상 weight 이하입니다.
 */
+
 public class TruckPassingTheBridge {
-    public int solution(int bridge_length, int weight, int[] truck_weights) {
-        int answer = 0;
-		int totW =0;
-		int idx=0;
-		
-       Queue<Integer> q = new LinkedList<>();
-       for(int i=0; i<bridge_length; i++) q.add(0);
-       
-       while(idx<truck_weights.length) {
-    	   
-    	   totW -= q.poll();
-    	   
-    	   if(totW+truck_weights[idx] <= weight) {
-    		   q.add(truck_weights[idx]);
-        	   totW += truck_weights[idx];
-        	   idx++;
-    	   }else {
-    		   q.add(0);
-    	   }
-    	   answer++;
-       }
-      return answer+q.size();
-	    
-	}
-	public static void main(String[] args) {
-		
-		TruckPassingTheBridge tptb = new TruckPassingTheBridge();
-		System.out.println(tptb.solution(2, 10, new int[] {7,6,8,3,4}));
-		
-	}
+
+  public int solution(int bridge_length, int weight, int[] truck_weights) {
+
+    int answer = 0, sumWgt = 0, idx = 0;
+
+    Queue<Integer> bridge = new LinkedList<>();
+
+    for (int i = 0; i < bridge_length; i++) {
+      bridge.add(0);
+    }
+
+    while (idx < truck_weights.length) {
+
+      sumWgt -= bridge.poll();
+
+      // 다리 위 모든 트럭 무게와 다음 트럭의 무게의 합보다 다리 중량이 높으면 추가
+      if (sumWgt + truck_weights[idx] <= weight) {
+
+        bridge.add(truck_weights[idx]);
+        sumWgt += truck_weights[idx];
+        idx++;
+
+      } else {
+        bridge.add(0);
+      }
+
+      answer++;
+    }
+
+    // 마지막 트럭 진입 후 다리길이 만큼 시간 추가
+    return answer + bridge.size();
+
+  }
+
+  @Test
+  public void test() {
+
+    TruckPassingTheBridge tptb = new TruckPassingTheBridge();
+
+    assertEquals(8, tptb.solution(2, 10, new int[] {7, 4, 5, 6}));
+    assertEquals(101, tptb.solution(100, 100, new int[] {10}));
+    assertEquals(110, tptb.solution(100, 100, new int[] {10, 10, 10, 10, 10, 10, 10, 10, 10, 10}));
+  }
 
 }
