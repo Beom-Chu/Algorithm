@@ -19,7 +19,9 @@ clothes의 각 행은 [의상의 이름, 의상의 종류]로 이루어져 있�
 같은 이름을 가진 의상은 존재하지 않습니다.
 clothes의 모든 원소는 문자열로 이루어져 있습니다.
 모든 문자열의 길이는 1 이상 20 이하인 자연수이고 알파벳 소문자 또는 '_' 로만 이루어져 있습니다.
-스파이는 하루에 최소 한 개의 의상은 입습니다.*/
+스파이는 하루에 최소 한 개의 의상은 입습니다.
+
+*/
 public class Camouflage {
 	
 	public static int solution(String[][] clothes) {
@@ -31,10 +33,12 @@ public class Camouflage {
 			hm.put(cloth[1], hm.getOrDefault(cloth[1], 0)+1);
 		}
 		
+		//의상을 벗었을 경우를 포함하기 위해 +1
 		for(String key :hm.keySet()) {
 			result *= hm.get(key)+1;
 		}
         
+		//전부 벗었을 경우를 제외하기 위해 -1
         return result-1;
     }
 	

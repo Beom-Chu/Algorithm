@@ -30,6 +30,20 @@ public class TelList {
 		
         return true;
     }
+	
+	//최적화 : 정렬을 했기 때문에 index와 index+1 체크해도 되므로 for문 하나 제거 가능
+    public static boolean solution2(String[] phone_book) {
+
+      Arrays.sort(phone_book);
+
+      for (int i = 0; i < phone_book.length - 1; i++) {
+        if (phone_book[i + 1].startsWith(phone_book[i])) {
+          return false;
+        }
+      }
+
+      return true;
+    }
 
 	public static void main(String[] args) {
 		
@@ -38,7 +52,7 @@ public class TelList {
 //		String[] param = {"12","123","1235","567","88"}; //	false
 		
 		long start = System.currentTimeMillis();
-		boolean rtn = solution(param);
+		boolean rtn = solution2(param);
 		System.out.println(rtn);
 		System.out.println(System.currentTimeMillis()-start);
 	}
