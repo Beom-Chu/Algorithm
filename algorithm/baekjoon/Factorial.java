@@ -22,25 +22,48 @@ import java.util.*;
 
 public class Factorial {
 
-	public static void main(String[] args) {
-		
-		try(Scanner sc = new Scanner(System.in)){
-			
-			int N = sc.nextInt();
-			
-			long fr = System.currentTimeMillis();
-			
-		
-			System.out.println(factorial(N));
-			
-			System.out.println("tiem : "+(System.currentTimeMillis()-fr));
-		}
-		
-	}
-	
-	static public int factorial(int N) {
-		if(N<=1) return 1;
-		
-		return N * factorial(N-1);
-	}
+  static int dp[];
+  
+  public static void main(String[] args) {
+    
+    try (Scanner sc = new Scanner(System.in)) {
+
+      int N = sc.nextInt();
+
+      long fr = System.currentTimeMillis();
+
+      System.out.println(factorial(N));
+
+      System.out.println("tiem : " + (System.currentTimeMillis() - fr));
+      
+      
+      dp = new int[N+1];
+      
+      long fr2 = System.currentTimeMillis();
+
+      System.out.println(factorialDp(N));
+
+      System.out.println("tiem : " + (System.currentTimeMillis() - fr2));
+      
+    }
+
+  }
+
+  static public int factorial(int N) {
+    
+    if (N <= 1)
+      return 1;
+
+    return N * factorial(N - 1);
+  }
+  
+  static public int factorialDp(int N) {
+
+    if(dp[N] != 0 ) return dp[N];
+    
+    if (N <= 1)
+      return 1;
+
+    return dp[N] = N * factorial(N - 1);
+  }
 }
