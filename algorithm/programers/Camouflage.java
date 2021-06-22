@@ -1,5 +1,6 @@
 package algorithm.programers;
 
+import java.util.Arrays;
 import java.util.HashMap;
 //위장
 /*스파이들은 매일 다른 옷을 조합하여 입어 자신을 위장합니다.
@@ -23,33 +24,47 @@ clothes의 모든 원소는 문자열로 이루어져 있습니다.
 
 */
 public class Camouflage {
-	
-	public static int solution(String[][] clothes) {
-		
-		int result = 1;
-		HashMap<String,Integer> hm = new HashMap<>();
-		
-		for(String[] cloth : clothes) {
-			hm.put(cloth[1], hm.getOrDefault(cloth[1], 0)+1);
-		}
-		
-		//의상을 벗었을 경우를 포함하기 위해 +1
-		for(String key :hm.keySet()) {
-			result *= hm.get(key)+1;
-		}
-        
-		//전부 벗었을 경우를 제외하기 위해 -1
-        return result-1;
-    }
-	
-	public static void main(String[] args) {
-		
-//		String[][] clothes = {{"yellowhat", "headgear"}, {"bluesunglasses", "eyewear"}, {"green_turban", "headgear"}};	//5
-		String[][] clothes = {{"crowmask", "face"}, {"bluesunglasses", "face"}, {"smoky_makeup", "face"}};	//3
 
-		int rtn = solution(clothes);
-		
-		System.out.println(rtn);
-	}
+  /* Stream 활용 */
+  public static int solution2(String[][] clothes) {
+    
+    HashMap<String, Integer> clothesCnt = new HashMap<>();
+
+    Arrays.stream(clothes).forEach(cloth -> {
+      clothesCnt.put(cloth[1], clothesCnt.getOrDefault(cloth[1], 0) + 1);
+    });
+
+    return clothesCnt.entrySet().stream().mapToInt(i -> i.getValue() + 1)
+        .reduce((i1, i2) -> i1 * i2).getAsInt() - 1;
+  }
+
+  
+  public static int solution(String[][] clothes) {
+
+    int result = 1;
+    HashMap<String, Integer> hm = new HashMap<>();
+
+    for (String[] cloth : clothes) {
+      hm.put(cloth[1], hm.getOrDefault(cloth[1], 0) + 1);
+    }
+
+    // 의상을 벗었을 경우를 포함하기 위해 +1
+    for (String key : hm.keySet()) {
+      result *= hm.get(key) + 1;
+    }
+
+    // 전부 벗었을 경우를 제외하기 위해 -1
+    return result - 1;
+  }
+
+  public static void main(String[] args) {
+
+     String[][] clothes = {{"yellowhat", "headgear"}, {"bluesunglasses", "eyewear"},{"green_turban", "headgear"}}; //5
+//    String[][] clothes = {{"crowmask", "face"}, {"bluesunglasses", "face"}, {"smoky_makeup", "face"}}; // 3
+
+    int rtn = solution2(clothes);
+
+    System.out.println(rtn);
+  }
 
 }

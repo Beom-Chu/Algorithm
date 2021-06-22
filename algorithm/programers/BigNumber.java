@@ -16,12 +16,27 @@ package algorithm.programers;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class BigNumber {
 
+  /* Stream 활용 */
+  public String solution3(int[] numbers) {
+    
+    StringBuilder sb = new StringBuilder();
+    
+    Arrays.stream(numbers)
+          .mapToObj(i->String.valueOf(i))
+          .sorted((s1,s2)->(s2+s1).compareTo(s1+s2))
+          .forEach(s->sb.append(s));
+    
+    return sb.toString();
+  }
+  
 
-  public String solution(int[] numbers) {
+  public String solution2(int[] numbers) {
 
     String[] arrS = new String[numbers.length];
     StringBuilder sb = new StringBuilder();
@@ -66,7 +81,7 @@ public class BigNumber {
     // int[] numbers = {3, 30, 34, 5, 9,340}; /* 9534330300 */
 
     BigNumber bigNumber = new BigNumber();
-    String rtn = bigNumber.solution(numbers);
+    String rtn = bigNumber.solution3(numbers);
 
     System.out.println(rtn);
   }
