@@ -22,6 +22,18 @@ import java.util.stream.Collectors;
 
 public class BigNumber {
 
+  /* Stream 활용 - 느림 */
+  public String solution4(int[] numbers) {
+    
+    return new BigDecimal(
+            Arrays.stream(numbers)
+                  .mapToObj(i->String.valueOf(i))
+                  .sorted((s1,s2)->(s2+s1).compareTo(s1+s2))
+                  .reduce("",(s1,s2)->s1+s2)
+          ).toString();
+    
+  }
+
   /* Stream 활용 */
   public String solution3(int[] numbers) {
     
@@ -32,7 +44,7 @@ public class BigNumber {
           .sorted((s1,s2)->(s2+s1).compareTo(s1+s2))
           .forEach(s->sb.append(s));
     
-    return sb.toString();
+    return new BigDecimal(sb.toString()).toString();
   }
   
 
@@ -81,7 +93,7 @@ public class BigNumber {
     // int[] numbers = {3, 30, 34, 5, 9,340}; /* 9534330300 */
 
     BigNumber bigNumber = new BigNumber();
-    String rtn = bigNumber.solution3(numbers);
+    String rtn = bigNumber.solution4(numbers);
 
     System.out.println(rtn);
   }
