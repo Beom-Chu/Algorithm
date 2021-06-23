@@ -7,7 +7,7 @@
 * [베스트앨범](./algorithm/programers/BestAlbum.java)
 
 ### 스택/큐
-* 기능개발
+* [기능개발](./algorithm/programers/FunctionDevelopment.java)
 * 프린터
 * [다리를 지나는 트럭](./algorithm/programers/TruckPassingTheBridge.java)
 * 주식가격
