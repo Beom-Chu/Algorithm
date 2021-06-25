@@ -19,18 +19,92 @@ number  k   return
 "1231234"   3   "3234"
 "4177252841"    4   "775841"
 
-
-
-테스트 실패 ㅠㅠ 보완 예정
-
 */
 package algorithm.programers;
 
+import java.util.Stack;
 import org.junit.jupiter.api.Test;
 
 public class MakeBigNumbers {
   
+  /* 
+   * fr, to 범위 내에서 가장 큰 숫자를 반속해서 가져오는데
+   * fr의 시작 index는 0,
+   * to의 시작 index는 전체 길이에서 k를 모두 삭제했을때의 길이를 뺀 숫자
+   * 범위내에서 큰 숫자를 가져오면 
+   * fr은 큰숫자의 index+1
+   * to는 이전 to+1
+   * 반복해서 처리
+   * */
   public String solution(String number, int k) {
+
+    StringBuilder answer = new StringBuilder();
+    StringBuilder numbers = new StringBuilder();
+    numbers.append(number.toCharArray());
+
+    int size = number.length();
+    int fr = 0;
+    int to = size - (size - k);
+
+    while (to < size) {
+
+      int bigIdx = getBigIndex(numbers, fr, to);
+
+      answer.append(numbers.charAt(bigIdx));
+
+      fr = bigIdx + 1;
+      to++;
+    }
+
+    return answer.toString();
+  }
+  
+  //범위 중 가장 큰 숫자의 Index 반환
+  public int getBigIndex(StringBuilder sb, int fr, int to) {
+
+    int maxIdx = fr;
+    int max = sb.charAt(fr) - '0';
+
+    for (int i = fr; i <= to; i++) {
+      int num = sb.charAt(i) - '0';
+      if (num > max) {
+        max = num;
+        maxIdx = i;
+      }
+    }
+
+    return maxIdx;
+  }
+  
+  
+  
+  
+  /* Stack을 활용한 심플한 코드 */
+  public String solution_simple(String number, int k) {
+    char[] result = new char[number.length() - k];
+    Stack<Character> stack = new Stack<>();
+
+    for (int i = 0; i < number.length(); i++) {
+      char c = number.charAt(i);
+      System.out.println(stack+","+c);
+      while (!stack.isEmpty() && stack.peek() < c && k-- > 0) {
+        stack.pop();
+      }
+      stack.push(c);
+    }
+    for (int i = 0; i < result.length; i++) {
+      result[i] = stack.get(i);
+    }
+    return new String(result);
+}
+  
+  
+  
+  
+  /* 맨 앞에서부터 K+1만큼의 범위에서 가장 작은 숫자를 제거
+   * 범위를 줄여가며 반복.. 했으나 실패
+   * */
+  public String solution_fail(String number, int k) {
 
     StringBuilder answer = new StringBuilder();
     answer.append(number.toCharArray());
@@ -69,11 +143,11 @@ public class MakeBigNumbers {
   public void test() {
     
     
-    System.out.println(solution("1924",2)); /*94*/
+//    System.out.println(solution("1924",2)); /*94*/
     
-    System.out.println(solution("1231234",3)); /*3234*/
+//    System.out.println(solution("1231234",3)); /*3234*/
     
-    System.out.println(solution("4177252841",4)); /*775841*/
+    System.out.println(solution_simple("4177252841",4)); /*775841*/
     
     
   }
