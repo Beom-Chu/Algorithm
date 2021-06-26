@@ -28,7 +28,10 @@
 * [카펫](./algorithm/programers/Carpet.java)
 
 ### 탐욕법
-* 체육복	
+* [체육복](./algorithm/programers/GymSuit.java)	
+* [조이스틱](./algorithm/programers/Joystick.java)
+* [큰 수 만들기](./algorithm/programers/MakeBigNumbers.java)
+* [구명보트](./algorithm/programers/Lifeboat.java)
 
 ### 동적계획법(DP)
 * [N으로 표현](./algorithm/programers/ExpressedAsN.java)
