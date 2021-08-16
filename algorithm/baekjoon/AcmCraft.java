@@ -119,13 +119,18 @@ ACM Craft[1005]
 399990
 2
 0
+
  */
 package algorithm.baekjoon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class AcmCraft {
@@ -139,7 +144,7 @@ public class AcmCraft {
     for (int i = 0; i < testCase; i++) {
       StringTokenizer tokenNk = new StringTokenizer(reader.readLine());
 
-      int building = Integer.valueOf(tokenNk.nextToken());
+      int buildingCnt = Integer.valueOf(tokenNk.nextToken());
       int ruleCnt = Integer.valueOf(tokenNk.nextToken());
       int[] buildTimes = getStringToIntArray(reader.readLine());
       int[][] rules = new int[ruleCnt][];
@@ -150,31 +155,85 @@ public class AcmCraft {
 
       int winBuilding = Integer.valueOf(reader.readLine());
 
-      // System.out.println("building : " + building);
-      // System.out.println("ruleCnt : " + ruleCnt);
-      //
-      // System.out.print("buildTimes : ");
-      // for(int buildTime : buildTimes) System.out.print(buildTime +" ");
-      // System.out.println();
-      //
-      // for(int[] rule : rules) {
-      // System.out.println("rule : " + rule[0] +" "+rule[1]);
-      // }
-      //
-      // System.out.println("winBuilding : "+winBuilding);
-
-      getWinBuildingMinTime(winBuilding, rules, buildTimes);
+      getWinBuildingMaxTime(winBuilding, rules, buildTimes);
     }
   }
+
   public static int[] getStringToIntArray(String str) {
     return Arrays.stream(str.split(" ")).mapToInt(Integer::parseInt).toArray();
   }
-  
-  
-  private static void getWinBuildingMinTime(int winBuilding, int[][] rules, int[] buildTimes) {
-    // TODO : 코딩 문제 풀기
+
+  // TODO : 최적화 필요
+  private static void getWinBuildingMaxTime(int winBuilding, int[][] rules, int[] buildTimes) {
+
+    Queue<TechTree> que = new LinkedList<>();
+    int maxTime = 0;
     
+    que.add(new TechTree(winBuilding, buildTimes[winBuilding - 1]));
+
+    while (!que.isEmpty()) {
+
+      TechTree techTree = que.poll();
+
+      int nextCnt = 0;
+
+      for (int[] rule : rules) {
+        if (techTree.getLastBuilding() == rule[1]) {
+          que.add(new TechTree(rule[0], techTree.getTree(),
+              techTree.getBuildTime() + buildTimes[rule[0] - 1]));
+          nextCnt++;
+        }
+      }
+
+      if (nextCnt == 0) {
+        maxTime = Math.max(maxTime, techTree.getBuildTime());
+      }
+    }
+
+    System.out.println(maxTime);
   }
 
 
+  public static class TechTree {
+
+    private List<Integer> tree;
+    private int buildTime;
+
+    public TechTree(int building, int buildTime) {
+      this.tree = new ArrayList<Integer>();
+      this.tree.add(building);
+      this.buildTime = buildTime;
+    }
+
+    public TechTree(int building, List<Integer> tree, int buildTime) {
+      this.tree = new ArrayList<Integer>(tree);
+      this.tree.add(building);
+      this.buildTime = buildTime;
+    }
+
+    public int getLastBuilding() {
+      return tree.get(tree.size() - 1);
+    }
+
+    public List<Integer> getTree() {
+      return tree;
+    }
+
+    public void setTree(List<Integer> tree) {
+      this.tree = tree;
+    }
+
+    public int getBuildTime() {
+      return buildTime;
+    }
+
+    public void setBuildTime(int buildTime) {
+      this.buildTime = buildTime;
+    }
+
+    @Override
+    public String toString() {
+      return "TechTree [tree=" + tree + ", buildTime=" + buildTime + "]";
+    }
+  }
 }
