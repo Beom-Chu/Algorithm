@@ -155,7 +155,7 @@ public class AcmCraft {
 
       int winBuilding = Integer.valueOf(reader.readLine());
 
-      getWinBuildingMaxTime(winBuilding, rules, buildTimes);
+      getWinBuildingMaxTime2(winBuilding, rules, buildTimes);
     }
   }
 
@@ -163,12 +163,56 @@ public class AcmCraft {
     return Arrays.stream(str.split(" ")).mapToInt(Integer::parseInt).toArray();
   }
 
+  private static void getWinBuildingMaxTime2(int winBuilding, int[][] rules, int[] buildTimes) {
+
+    boolean[] chk = new boolean[rules.length];
+    Queue<Node> que = new LinkedList<>();
+    int max = 0;
+    que.add(new Node(winBuilding, buildTimes[winBuilding - 1]));
+
+    while (!que.isEmpty()) {
+
+      Node node = que.poll();
+
+      for (int i = 0; i < rules.length; i++) {
+        if(!chk[i]) {
+          if (rules[i][1] == node.no) {
+            System.out.println(node.no + "->" +rules[i][0] +", i: "+ i +", time:"+node.time +" + "+ buildTimes[rules[i][0] - 1]);
+            que.add(new Node(rules[i][0], (node.time + buildTimes[rules[i][0] - 1])));
+            chk[i] = true;
+          }
+        }
+      }
+
+      max = Math.max(max, node.time);
+    }
+
+    System.out.println(max);
+  }
+
+  public static class Node {
+    int no;
+    int time;
+
+    Node(int no, int time) {
+      this.no = no;
+      this.time = time;
+    }
+
+    @Override
+    public String toString() {
+      return "Node [no=" + no + ", time=" + time + "]";
+    }
+  }
+  
+
   // TODO : 최적화 필요
   private static void getWinBuildingMaxTime(int winBuilding, int[][] rules, int[] buildTimes) {
 
+    boolean[] chk = new boolean[rules.length];
     Queue<TechTree> que = new LinkedList<>();
     int maxTime = 0;
-    
+
     que.add(new TechTree(winBuilding, buildTimes[winBuilding - 1]));
 
     while (!que.isEmpty()) {
@@ -177,11 +221,14 @@ public class AcmCraft {
 
       int nextCnt = 0;
 
-      for (int[] rule : rules) {
-        if (techTree.getLastBuilding() == rule[1]) {
-          que.add(new TechTree(rule[0], techTree.getTree(),
-              techTree.getBuildTime() + buildTimes[rule[0] - 1]));
-          nextCnt++;
+      for (int i=0; i<rules.length; i++) {
+        
+        if(!chk[i]) {
+          if (techTree.getLastBuilding() == rules[i][1]) {
+            chk[i] = true;
+            que.add(new TechTree(rules[i][0], techTree.getTree(), techTree.getBuildTime() + buildTimes[rules[i][0] - 1]));
+            nextCnt++;
+          }
         }
       }
 
