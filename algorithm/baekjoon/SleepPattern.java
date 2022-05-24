@@ -82,24 +82,24 @@ public class SleepPattern {
 
   static List<String> dayOfTheWeek = Arrays.asList("Mon", "Tue", "Wed", "Thu", "Fri");
 
-  static public void main(String[] agrs) throws IOException {
+  static public void main(String[] args) throws IOException {
 
     try (InputStreamReader isr = new InputStreamReader(System.in);
-        BufferedReader reader = new BufferedReader(isr);) {
+        BufferedReader reader = new BufferedReader(isr)) {
 
       StringTokenizer st = new StringTokenizer(reader.readLine());
 
-      int T = Integer.valueOf(st.nextToken());
-      int N = Integer.valueOf(st.nextToken());
+      int T = Integer.parseInt(st.nextToken());
+      int N = Integer.parseInt(st.nextToken());
       int sum = 0;
 
       for (int i = 0; i < N; i++) {
 
         StringTokenizer st2 = new StringTokenizer(reader.readLine());
         String D1 = st2.nextToken();
-        int H1 = Integer.valueOf(st2.nextToken());
+        int H1 = Integer.parseInt(st2.nextToken());
         String D2 = st2.nextToken();
-        int H2 = Integer.valueOf(st2.nextToken());
+        int H2 = Integer.parseInt(st2.nextToken());
 
         sum += (dayOfTheWeek.indexOf(D2) - dayOfTheWeek.indexOf(D1)) * 24;
         sum += H2 - H1;
