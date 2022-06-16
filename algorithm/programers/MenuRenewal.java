@@ -68,72 +68,90 @@ WX가 두 번, XY가 두 번 주문됐습니다.
  */
 public class MenuRenewal {
 
-    Set<String> orderMenus = new LinkedHashSet<>();
-    String[] orders;
-    SortedSet<String> result = new TreeSet<>();
+    SortedSet<String> result;
+    Set<String> orderMenus;
+    String[] sortOrders;
+    SortedSet<String> courseMenus ;
+    int maxOrderCount;
 
     public String[] solution(String[] orders, int[] course) {
-        String[] answer = {};
-        this.orders = orders;
 
-        for(String menu : orders) {
-            orderMenus.addAll(List.of(menu.split("")));
+        result = new TreeSet<>();
+        orderMenus = new LinkedHashSet<>();
+        sortOrders = new String[orders.length];
+
+        for (int i = 0; i < orders.length; i++) {
+            /* 주문된 모든 메뉴 설정 */
+            orderMenus.addAll(List.of(orders[i].split("")));
+
+            /* 주문의 메뉴 정렬 */
+            char[] chars = orders[i].toCharArray();
+            Arrays.sort(chars);
+            sortOrders[i] = new String(chars);
         }
 
         for(int count : course) {
+            courseMenus = new TreeSet<>();
+            maxOrderCount = 0;
             for(String menu : orderMenus) {
                 makeCourse(menu, count);
             }
+            result.addAll(courseMenus);
         }
 
-        System.out.println("[[[result = " + result);
+//        System.out.println("[[[result = " + result);
 
-        return answer;
+        return result.toArray(String[]::new);
     }
 
+    /* 코스 대상 구하기 */
     public void makeCourse(String menus, int count) {
         if(count <= menus.length()) {
-            int inclusionCount = checkForInclusion(menus);
+            int inclusionCount = numberOfInclusions(menus);
+
             if(inclusionCount >= 2) {
-                System.out.println("[[[checkForInclusion(menus) = [" + menus + "] : " + inclusionCount);
+
+//                System.out.println("[[[menus = " + menus +" => "+count);
+
+                if(inclusionCount > maxOrderCount) {
+                    maxOrderCount = inclusionCount;
+                    courseMenus = new TreeSet<>();
+                    courseMenus.add(menus);
+                } else if(inclusionCount == maxOrderCount) {
+                    courseMenus.add(menus);
+                }
             }
             return;
         }
 
         for(String menu : orderMenus) {
-          if(!contains(menus, menu)) {
+          if(!menus.contains(menu)) {
               makeCourse(menus + menu, count);
           }
         }
     }
 
-    public int checkForInclusion(String menus) {
+    /* 주문 중 메뉴들의 포함 횟수 반환 */
+    public int numberOfInclusions(String menus) {
         int includedCount = 0;
 
-        for(String order : orders) {
-            if(contains(order, menus)) {
+        StringJoiner joiner = new StringJoiner(".*",".*",".*");
+        for(String menu : menus.split("")) {
+            joiner.add(menu);
+        }
+
+        for(String order : sortOrders) {
+            if(order.matches(joiner.toString())) {
                 includedCount++;
             }
         }
-
         return includedCount;
-    }
-
-    /* str1에 str2의 문자 하나하나가 포함되어 있는지 체크 */
-    public boolean contains(String str1, String str2){
-        int menuCount = str2.length();
-        for(String s2 : str2.split("")) {
-            if(str1.contains(s2)){
-                menuCount--;
-            }
-        }
-        return menuCount == 0;
     }
 
     @Test
     public void test() {
         Assertions.assertArrayEquals(new String[]{"AC", "ACDE", "BCFG", "CDE"}, solution(new String[]{"ABCFG", "AC", "CDE", "ACDE", "BCFG", "ACDEH"}, new int[]{2, 3, 4}));
-//        Assertions.assertArrayEquals(new String[]{"ACD", "AD", "ADE", "CD", "XYZ"}, solution(new String[]{"ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"}, new int[]{2, 3, 5}));
-//        Assertions.assertArrayEquals(new String[]{"WX", "XY"}, solution(new String[]{"XYZ", "XWY", "WXA"}, new int[]{2, 3, 4}));
+        Assertions.assertArrayEquals(new String[]{"ACD", "AD", "ADE", "CD", "XYZ"}, solution(new String[]{"ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"}, new int[]{2, 3, 5}));
+        Assertions.assertArrayEquals(new String[]{"WX", "XY"}, solution(new String[]{"XYZ", "XWY", "WXA"}, new int[]{2, 3, 4}));
     }
 }
