@@ -64,10 +64,15 @@ public class Pokemon {
         return Math.min(maxNum, set.size());
     }
 
+    public int solution2(int[] nums) {
+
+        return Math.min(nums.length / 2, Arrays.stream(nums).boxed().collect(Collectors.toSet()).size());
+    }
+
     @Test
     public void test() {
-        Assertions.assertEquals(2, solution(new int[]{3,1,2,3}));
-        Assertions.assertEquals(3, solution(new int[]{3,3,3,2,2,4}));
-        Assertions.assertEquals(2, solution(new int[]{3,3,3,2,2,2}));
+        Assertions.assertEquals(2, solution2(new int[]{3,1,2,3}));
+        Assertions.assertEquals(3, solution2(new int[]{3,3,3,2,2,4}));
+        Assertions.assertEquals(2, solution2(new int[]{3,3,3,2,2,2}));
     }
 }
