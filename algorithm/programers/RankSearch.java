@@ -81,15 +81,11 @@ package algorithm.programers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class RankSearch {
 
-
-
+    /* 성능 불통 */
     public int[] solution(String[] info, String[] query) {
 
         int[] answer = new int[query.length];
@@ -129,49 +125,70 @@ public class RankSearch {
         }
     }
 
+
+
+    /* 성능 통과 : 이진검색 활용 */
+    Map<String, List<Integer>> allInfo;
+
     public int[] solution2(String[] info, String[] query) {
         int[] answer = new int[query.length];
+        allInfo = new HashMap<>();
 
-        for (int i = 0; i < query.length; i++) {
-            int count = 0;
-            for(String a : info) {
-                if(check(query[i], a)) {
-                    count++;
-                }
-            }
-            answer[i] = count;
+        for(String s : info) {
+            combination("", 0, s.split(" "));
+        }
+
+        for(Map.Entry e : allInfo.entrySet()) {
+            allInfo.get(e.getKey()).sort(Integer::compareTo);
+        }
+
+        for(int i = 0 ; i < query.length; i++) {
+            answer[i] = binarySearch(query[i]);
         }
         return answer;
     }
 
-    public boolean check(String query, String info) {
-        String[] arrQuery = query.replaceAll(" and "," ").split(" ");
-        String[] arrInfo = info.split(" ");
+    public int binarySearch(String q) {
+        String[] splitQ = q.replaceAll(" and ", "").split(" ");
 
-        return (arrQuery[0].equals("-") || arrInfo[0].equals(arrQuery[0]))
-                && (arrQuery[1].equals("-") || arrInfo[1].equals(arrQuery[1]))
-                && (arrQuery[2].equals("-") || arrInfo[2].equals(arrQuery[2]))
-                && (arrQuery[3].equals("-") || arrInfo[3].equals(arrQuery[3]))
-                && Integer.parseInt(arrInfo[4]) >= Integer.parseInt(arrQuery[4]);
+        if(!allInfo.containsKey(splitQ[0])) {return 0;}
+
+        List<Integer> scores = allInfo.get(splitQ[0]);
+        int l = 0, h = scores.size() - 1, checkScore = Integer.parseInt(splitQ[1]);
+
+        while(l <= h) {
+            int m = (l + h) / 2;
+            if(scores.get(m) < checkScore) {
+                l = m + 1;
+            } else {
+                h = m - 1;
+            }
+        }
+        return scores.size() - l;
     }
+
+    public void combination(String s, int depth, String[] split) {
+
+        if(depth > 3) {
+            if(allInfo.containsKey(s)) {
+                allInfo.get(s).add(Integer.parseInt(split[4]));
+            } else {
+                List<Integer> al = new ArrayList<>();
+                al.add(Integer.parseInt(split[4]));
+                allInfo.put(s, al);
+            }
+            return;
+        }
+        combination(s + "-", depth + 1, split);
+        combination(s + split[depth], depth + 1, split);
+    }
+
 
     @Test
     public void test() {
         Assertions.assertArrayEquals(new int[]{1,1,1,1,2,4},
-                solution(new String[]{"java backend junior pizza 150","python frontend senior chicken 210","python frontend senior chicken 150","cpp backend senior pizza 260","java backend junior chicken 80","python backend senior chicken 50"}
+                solution2(new String[]{"java backend junior pizza 150","python frontend senior chicken 210","python frontend senior chicken 150","cpp backend senior pizza 260","java backend junior chicken 80","python backend senior chicken 50"}
                         , new String[]{"java and backend and junior and pizza 100","python and frontend and senior and chicken 200","cpp and - and senior and pizza 250","- and backend and senior and - 150","- and - and - and chicken 100","- and - and - and - 150"}));
     }
 
-    @Test
-    public void test2(){
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < 10_000; i++) {
-            solution2(new String[]{"java backend junior pizza 150","python frontend senior chicken 210","python frontend senior chicken 150","cpp backend senior pizza 260","java backend junior chicken 80","python backend senior chicken 50"}
-                    , new String[]{"java and backend and junior and pizza 100","python and frontend and senior and chicken 200","cpp and - and senior and pizza 250","- and backend and senior and - 150","- and - and - and chicken 100","- and - and - and - 150"
-                            ,"java and backend and junior and pizza 100","python and frontend and senior and chicken 200","cpp and - and senior and pizza 250","- and backend and senior and - 150","- and - and - and chicken 100","- and - and - and - 150"
-                            ,"java and backend and junior and pizza 100","python and frontend and senior and chicken 200","cpp and - and senior and pizza 250","- and backend and senior and - 150","- and - and - and chicken 100","- and - and - and - 150"
-                            ,"java and backend and junior and pizza 100","python and frontend and senior and chicken 200","cpp and - and senior and pizza 250","- and backend and senior and - 150","- and - and - and chicken 100","- and - and - and - 150"});
-        }
-        System.out.println("time : "+(System.currentTimeMillis() - start));
-    }
 }
