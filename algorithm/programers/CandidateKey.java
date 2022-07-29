@@ -43,12 +43,18 @@ relation	result
 입출력 예 설명
 입출력 예 #1
 문제에 주어진 릴레이션과 같으며, 후보 키는 2개이다.
+
+
+비트마스킹 활용
+
  */
 package algorithm.programers;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringJoiner;
 
 public class CandidateKey {
@@ -59,22 +65,32 @@ public class CandidateKey {
 
         rowLength = relation.length;
         columnLength = relation[0].length;
+        List<String> candidates = new ArrayList<>();
 
+        //유일성
         for (int i = 1; i < (1 << columnLength); i++) {
-            String bin = String.format("%0"+columnLength+"d", Integer.parseInt(Integer.toBinaryString(i)));
-            boolean result = check(relation, bin);
-            System.out.println("[[[bin = " + bin + ":" + result);
+            String bin = String.format("%0" + columnLength + "d", Integer.parseInt(Integer.toBinaryString(i)));
+            if (checkUnique(relation, bin)) {
+                candidates.add(bin);
+            }
         }
-        //TODO : 최소성 맞추기 위한 로직 추가 해야함.
 
+        List<String> result = new ArrayList<>();
 
-        return 0;
+        //최소성
+        for(String candidate : candidates) {
+            if(checkMinimal(result, candidate)){
+                result.add(candidate);
+            }
+        }
+
+        return result.size();
     }
 
-    public boolean check(String[][] relation, String bin) {
+    public boolean checkUnique(String[][] relation, String bin) {
         for (int i = 0; i < rowLength - 1; i++) {
             for (int j = i + 1; j < rowLength; j++) {
-                if(concat(bin, relation[i]).equals(concat(bin, relation[j]))) {
+                if (concat(bin, relation[i]).equals(concat(bin, relation[j]))) {
                     return false;
                 }
             }
@@ -84,16 +100,36 @@ public class CandidateKey {
 
     public String concat(String bin, String[] r) {
         StringJoiner sj = new StringJoiner("_");
-        for(int i = 0; i < bin.length(); i++) {
-            if(bin.charAt(i) == '1') {
+        for (int i = 0; i < bin.length(); i++) {
+            if (bin.charAt(i) == '1') {
                 sj.add(r[i]);
             }
         }
         return sj.toString();
     }
 
+    public boolean checkMinimal(List<String> result, String candidate) {
+        for(String r : result) {
+            if((Integer.parseInt(r,2) & Integer.parseInt(candidate, 2)) == Integer.parseInt(r,2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     @Test
     public void test() {
         Assertions.assertEquals(2 , solution(new String[][]{{"100","ryan","music","2"},{"200","apeach","math","2"},{"300","tube","computer","3"},{"400","con","computer","4"},{"500","muzi","music","3"},{"600","apeach","music","2"}}));
+        Assertions.assertEquals(1 , solution(new String[][]{{"a","b","c"},{"1","b","c"},{"a","b","4"},{"a","5","c"}}));
+        Assertions.assertEquals(2 , solution(new String[][]{{"a","1","4"},{"2","1","5"},{"a","2","4"}}));
+    }
+
+    @Test
+    public void test2(){
+        int i1 = Integer.parseInt("1010", 2);
+        int i2 = Integer.parseInt("0101", 2);
+        int i = i1 & i2;
+        System.out.println("[[[i1 & i2 = " + i);
     }
 }
