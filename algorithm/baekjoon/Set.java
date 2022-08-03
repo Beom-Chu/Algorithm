@@ -72,8 +72,7 @@ package algorithm.baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.StringJoiner;
 import java.util.StringTokenizer;
 
 public class Set {
@@ -82,43 +81,37 @@ public class Set {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         int M = Integer.parseInt(reader.readLine());
-        List<Calculation> cal = new ArrayList<>();
-
-        for (int i = 0; i < M; i++) {
-            cal.add(new Calculation(reader.readLine()));
-        }
-
-        // TODO : 메모리 초과...
+        StringJoiner sj = new StringJoiner("\n");
 
         int set = 0;
 
-        for(Calculation c : cal) {
-            if(c.action.equals("add")) {
-                set |= (1 << c.no);
-            } else if(c.action.equals("remove")) {
-                set &= ~(1 << c.no);
-            } else if(c.action.equals("toggle")) {
-                set ^= (1 << c.no);
-            } else if(c.action.equals("all")) {
-                set = (1 << 21) - 1;
-            } else if(c.action.equals("empty")) {
-                set = 0;
-            } else if(c.action.equals("check")) {
-                System.out.println((set & (1 << c.no)) == 0 ? 0 : 1);
+        for (int i = 0; i < M; i++) {
+            StringTokenizer st = new StringTokenizer(reader.readLine());
+            String action = st.nextToken();
+            int no = !action.equals("all") && !action.equals("empty") ? Integer.parseInt(st.nextToken()) : 0;
+
+            switch (action) {
+                case "add":
+                    set |= (1 << no);
+                    break;
+                case "remove":
+                    set &= ~(1 << no);
+                    break;
+                case "toggle":
+                    set ^= (1 << no);
+                    break;
+                case "all":
+                    set = (1 << 21) - 1;
+                    break;
+                case "empty":
+                    set = 0;
+                    break;
+                case "check":
+                    sj.add((set & (1 << no)) == 0 ? "0" : "1");
+                    break;
             }
         }
-    }
 
-    static class Calculation {
-        String action;
-        int no;
-
-        Calculation(String s) {
-            StringTokenizer st = new StringTokenizer(s);
-            action = st.nextToken();
-            if(!action.equals("all") && !action.equals("empty")) {
-                no = Integer.parseInt(st.nextToken());
-            }
-        }
+        System.out.println(sj);
     }
 }
