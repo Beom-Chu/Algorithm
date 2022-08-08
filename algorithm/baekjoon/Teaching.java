@@ -51,20 +51,24 @@ package algorithm.baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Teaching {
 
+    static String[] words;
+    static int K;
+    static int result = 0;
+    static boolean[] teach = new boolean[26];
+    
     public static void main(String[] args) throws IOException {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(reader.readLine());
 
         int N = Integer.parseInt(st.nextToken());
-        int K = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
 
-        String[] words = new String[N];
+        words = new String[N];
         for (int i = 0; i < N; i++) {
             String s = reader.readLine();
             words[i] = s.substring(4, s.length() - 4);
@@ -78,18 +82,48 @@ public class Teaching {
             return;
         }
 
-        boolean[] teach = new boolean[26];
         teach['a' - 'a'] = true;
         teach['n' - 'a'] = true;
         teach['t' - 'a'] = true;
         teach['i' - 'a'] = true;
         teach['c' - 'a'] = true;
 
+        backTracking(5);
 
-        System.out.println("[[[words = " + Arrays.toString(words));
-        System.out.println("[[[teach = " + Arrays.toString(teach));
+        System.out.println(result);
+    }
 
-        //TODO : 진행중..
+    public static void backTracking(int teachCount) {
 
+        if(teachCount >= K) {
+            int count = check();
+            result = Math.max(result, count);
+            return;
+        }
+
+        for (int i = 0; i < 26; i++) {
+            if(!teach[i]) {
+                teach[i] = true;
+                backTracking(teachCount + 1);
+                teach[i] = false;
+            }
+        }
+    }
+
+    public static int check() {
+        int count = 0;
+        for (String word : words) {
+            boolean read = true;
+            for (int j = 0; j < word.length(); j++) {
+                if (!teach[word.charAt(j) - 'a']) {
+                    read = false;
+                    break;
+                }
+            }
+            if (read) {
+                count++;
+            }
+        }
+        return count;
     }
 }
