@@ -67,7 +67,7 @@ check 1
 
 비트마스킹
  */
-package algorithm.baekjoon;
+package algorithm.baekjoon.bitmask;
 
 import java.io.BufferedReader;
 import java.io.IOException;
