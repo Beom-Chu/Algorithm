@@ -33,11 +33,13 @@
 
 0/1 냅색 알고리즘(knapsack).
  */
-package algorithm.baekjoon.dynamic.programming;
+package algorithm.baekjoon.Knapsack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class PlainBackpack {
@@ -46,7 +48,7 @@ public class PlainBackpack {
     static int[] W, V;
     static int[][] DP;
 
-    public static void main(String[] args) throws IOException {
+    public static void main2(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(reader.readLine());
         N = Integer.parseInt(st.nextToken());
@@ -76,5 +78,21 @@ public class PlainBackpack {
         int n2 = knapsack(i + 1, w);
 
         return DP[i][w] = Math.max(n1, n2);
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int N = scanner.nextInt();
+        int K = scanner.nextInt();
+        int[] dp = new int[K+1];
+        for (int i = 1; i <= N; i++) {
+            int W = scanner.nextInt();
+            int V = scanner.nextInt();
+            for (int j = K; j >= W; j--) {
+                dp[j] = Math.max(dp[j], dp[j-W] + V);
+                System.out.println(j +", "+ (j-W) +" = " + Arrays.toString(dp));
+            }
+        }
+        System.out.println(dp[K]);
     }
 }
