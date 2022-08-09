@@ -46,7 +46,7 @@ antaktica
 예제 출력 3
 3
  */
-package algorithm.baekjoon;
+package algorithm.baekjoon.dfs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -88,12 +88,12 @@ public class Teaching {
         teach['i' - 'a'] = true;
         teach['c' - 'a'] = true;
 
-        backTracking(5);
+        backTracking(5, 0);
 
         System.out.println(result);
     }
 
-    public static void backTracking(int teachCount) {
+    public static void backTracking(int teachCount, int start) {
 
         if(teachCount >= K) {
             int count = check();
@@ -101,10 +101,10 @@ public class Teaching {
             return;
         }
 
-        for (int i = 0; i < 26; i++) {
+        for (int i = start; i < 26; i++) {
             if(!teach[i]) {
                 teach[i] = true;
-                backTracking(teachCount + 1);
+                backTracking(teachCount + 1, i);
                 teach[i] = false;
             }
         }
