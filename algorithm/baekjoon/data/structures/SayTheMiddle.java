@@ -1,5 +1,5 @@
 /*
-가운데를 말해요
+가운데를 말해요 [1655]
 시간 제한	메모리 제한	제출	정답	맞힌 사람	정답 비율
 0.1 초 (하단 참고)	128 MB	40795	11907	8985	30.812%
 문제
@@ -35,7 +35,7 @@
 2
 5
  */
-package algorithm.baekjoon;
+package algorithm.baekjoon.data.structures;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,17 +46,44 @@ import java.util.PriorityQueue;
 
 public class SayTheMiddle {
 
+    /*
+    시간 초과가 안되기 위해서
+    for문을 하나만 쓰도록 고치고
+    list를 사용하지 않았고
+    결과값을 StringBuilder에 모아서 한번에 출력
+     */
     public static void main(String[] args) throws IOException {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(reader.readLine());
-        int[] numbers = new int[N];
+
+        PriorityQueue<Integer> up = new PriorityQueue<>(Comparator.naturalOrder());
+        PriorityQueue<Integer> down = new PriorityQueue<>(Comparator.reverseOrder());
+
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < N; i++) {
-            numbers[i] = Integer.parseInt(reader.readLine());
+            int number = Integer.parseInt(reader.readLine());
+
+            if(down.isEmpty()) {
+                down.add(number);
+            } else {
+                if(down.size() > up.size()) {
+                    up.add(number);
+                } else {
+                    down.add(number);
+                }
+
+                if(down.peek() > up.peek()) {
+                    int d = down.poll();
+                    int u = up.poll();
+                    up.add(d);
+                    down.add(u);
+                }
+            }
+            sb.append(down.peek()).append("\n");
         }
-
-
+        System.out.println(sb);
     }
 
     /* 시간초과... */
