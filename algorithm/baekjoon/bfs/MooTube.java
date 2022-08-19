@@ -63,28 +63,31 @@ package algorithm.baekjoon.bfs;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class MooTube {
 
-    static int[][] usado;
-    static boolean[] visit;
+    static Map<Integer, List<int[]>> usado = new HashMap<>();
+    static int N, Q;
 
     public static void main(String[] args) throws IOException {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st1 = new StringTokenizer(reader.readLine());
-        int N = Integer.parseInt(st1.nextToken());
-        int Q = Integer.parseInt(st1.nextToken());
+        N = Integer.parseInt(st1.nextToken());
+        Q = Integer.parseInt(st1.nextToken());
 
-        usado = new int[N - 1][3];
+
         int[][] kvs = new int[Q][2];
 
+        for (int i = 1; i <= N; i++) {
+            usado.put(i, new ArrayList<>());
+        }
+
         for (int i = 0; i < N - 1; i++) {
-            usado[i] = Arrays.stream(reader.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+            int[] u = Arrays.stream(reader.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+            usado.get(u[0]).add(new int[]{u[1],u[2]});
+            usado.get(u[1]).add(new int[]{u[0],u[2]});
         }
 
         for(int i = 0; i < Q; i++) {
@@ -94,37 +97,28 @@ public class MooTube {
         StringBuilder sb = new StringBuilder();
 
         for(int[] kv : kvs) {
-            System.out.println("k:" + kv[0] + ", v:" + kv[1]);
-            visit = new boolean[N - 1];
             sb.append(bfs(kv[0], kv[1])).append("\n");
         }
         System.out.println(sb);
     }
 
     public static int bfs(int k, int v) {
-        int result = -1;
+        int result = 0;
         Queue<Integer> que = new LinkedList<>();
+        boolean[] visit = new boolean[N + 1];
         que.add(v);
 
         while(!que.isEmpty()) {
             Integer current = que.poll();
-            System.out.println("[[[current = " + current);
-            for (int i = 0; i < usado.length; i++) {
-                if (usado[i][2] >= k && !visit[i]){
-                System.out.println("[[[usado[i][2] = " + usado[i][2] + ", visit =" + visit[i]);
+            visit[current] = true;
 
-                    visit[i] = true;
-                    if (usado[i][0] == current) {
-                        que.add(usado[i][1]);
-                    }
-                    if (usado[i][1] == current) {
-                        que.add(usado[i][0]);
-                    }
+            for(int[] u : usado.get(current)) {
+                if (!visit[u[0]] && u[1] >= k) {
+                    que.add(u[0]);
+                    result++;
                 }
             }
-            result++;
         }
-
         return result;
     }
 }
