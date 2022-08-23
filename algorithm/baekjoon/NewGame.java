@@ -139,8 +139,10 @@ package algorithm.baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class NewGame {
 
@@ -159,7 +161,10 @@ public class NewGame {
         horses = new ArrayList<>();
 
         for (int i = 1; i <= N; i++) {
-            board[i] = Arrays.stream(reader.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+            StringTokenizer st2 = new StringTokenizer(reader.readLine());
+            for (int j = 1; j <= N; j++) {
+                board[i][j] = Integer.parseInt(st2.nextToken());
+            }
         }
 
         for (int i = 1; i <= K; i++) {
@@ -168,38 +173,69 @@ public class NewGame {
 
         System.out.println("[[[board = " + Arrays.deepToString(board));
         System.out.println("[[[horses = " + horses);
+        System.out.println();
 
         for (int i = 0; i < 1000; i++) {
 
             for(Horse h : horses) {
-                if(h.i != 0) {continue;}
+                if(h.height != 0) {continue;}
 
-                move(h);
+                if(move(h)) {
+                    System.out.println(i + 1);
+                    return;
+                }
             }
         }
 
+        System.out.println();
+        System.out.println("[[[horses = " + horses);
+
+        System.out.println(-1);
     }
 
-    static public void move(Horse h) {
+    static public boolean move(Horse h) {
+        System.out.println("[[[h.i = " + h.i);
+        int max = 0;
         int moveR = h.r + direction[h.d][0];
         int moveC = h.c + direction[h.d][1];
 
         if(moveR > N || moveR < 0 || moveC > N || moveC < 0 || board[moveR][moveC] == 2) {
             int opposite = (h.d + 2) % 4;
             h.d = opposite == 0 ? 1 : opposite;
-            return;
+            return false;
         }
 
-        Stream<Horse> horseStream = horses.stream().filter(o -> o.r == h.r && o.c == h.c);
+        int sameLocCnt = (int) horses.stream().filter(o -> o.r == h.r && o.c == h.c).count();
+        int moveLocCnt = (int) horses.stream().filter(o -> o.r == moveR && o.c == moveC).count();
 
-        if(board[moveR][moveC] == 1) {
-            horseStream.forEach(o -> o.height = (int) horseStream.count() - o.height);
+        for(Horse horse : horses) {
+            if(horse.i != h.i) {
+                if(horse.r == h.r && horse.c == h.c) {
+                    if (board[moveR][moveC] == 1) {
+                        horse.height = sameLocCnt - horse.height;
+                    }
+                    horse.r = moveR;
+                    horse.c = moveC;
+
+                    if(moveLocCnt > 0) {
+                        horse.height += moveLocCnt;
+                        max = Math.max(max, horse.height);
+                    }
+                }
+            }
         }
 
-        horseStream.forEach(o -> {
-            o.r = moveR;
-            o.c = moveC;
-        });
+        h.r = moveR;
+        h.c = moveC;
+
+        if(moveLocCnt > 0) {
+            h.height = moveLocCnt;
+        }
+        max = Math.max(max, h.height);
+
+        System.out.println("[[[horses = " + horses);
+
+        return max >= 3;
     }
 
     static class Horse {
@@ -216,6 +252,17 @@ public class NewGame {
             this.c = Integer.parseInt(as[1]);
             this.d = Integer.parseInt(as[2]);
             this.height = 0;
+        }
+
+        @Override
+        public String toString() {
+            return "Horse{" +
+                    "i=" + i +
+                    ", r=" + r +
+                    ", c=" + c +
+                    ", d=" + d +
+                    ", height=" + height +
+                    '}';
         }
     }
 }
