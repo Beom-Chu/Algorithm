@@ -1,5 +1,5 @@
 /*
-새로운 게임
+새로운 게임[17780]
 시간 제한	메모리 제한	제출	정답	맞힌 사람	정답 비율
 0.5 초	512 MB	2436	1159	869	47.434%
 문제
@@ -140,7 +140,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -171,10 +170,6 @@ public class NewGame {
             horses.add(new Horse(reader.readLine(), i));
         }
 
-        System.out.println("[[[board = " + Arrays.deepToString(board));
-        System.out.println("[[[horses = " + horses);
-        System.out.println();
-
         for (int i = 0; i < 1000; i++) {
 
             for(Horse h : horses) {
@@ -187,55 +182,66 @@ public class NewGame {
             }
         }
 
-        System.out.println();
-        System.out.println("[[[horses = " + horses);
-
         System.out.println(-1);
     }
 
     static public boolean move(Horse h) {
-        System.out.println("[[[h.i = " + h.i);
+
         int max = 0;
-        int moveR = h.r + direction[h.d][0];
-        int moveC = h.c + direction[h.d][1];
+        int curR = h.r;
+        int curC = h.c;
+        int moveR = curR + direction[h.d][0];
+        int moveC = curC + direction[h.d][1];
 
-        if(moveR > N || moveR < 0 || moveC > N || moveC < 0 || board[moveR][moveC] == 2) {
-            int opposite = (h.d + 2) % 4;
-            h.d = opposite == 0 ? 1 : opposite;
-            return false;
-        }
+        // 이동 위치로 갈 수 없거나 파란칸인 경우
+        if(moveR > N || moveR < 1 || moveC > N || moveC < 1 || board[moveR][moveC] == 2) {
 
-        int sameLocCnt = (int) horses.stream().filter(o -> o.r == h.r && o.c == h.c).count();
-        int moveLocCnt = (int) horses.stream().filter(o -> o.r == moveR && o.c == moveC).count();
+            h.d += h.d % 2 == 1 ? 1 : -1;
+            moveR = curR + direction[h.d][0];
+            moveC = curC + direction[h.d][1];
 
-        for(Horse horse : horses) {
-            if(horse.i != h.i) {
-                if(horse.r == h.r && horse.c == h.c) {
-                    if (board[moveR][moveC] == 1) {
-                        horse.height = sameLocCnt - horse.height;
-                    }
-                    horse.r = moveR;
-                    horse.c = moveC;
-
-                    if(moveLocCnt > 0) {
-                        horse.height += moveLocCnt;
-                        max = Math.max(max, horse.height);
-                    }
-                }
+            // 반대 방향으로 이동할 위치로 갈수 없거나 파란칸이면 방향만 바꾼채로 이동 안함
+            if(moveR > N || moveR < 1 || moveC > N || moveC < 1 || board[moveR][moveC] == 2) {
+                return false;
             }
         }
 
-        h.r = moveR;
-        h.c = moveC;
-
-        if(moveLocCnt > 0) {
-            h.height = moveLocCnt;
+        // 같은 위치의 말 개수, 이동할 위치의 말 개수
+        int sameLocCnt = 0, moveLocCnt = 0;
+        for(Horse horse : horses) {
+            if(curR == horse.r && curC == horse.c) {
+                sameLocCnt++;
+            }
+            if(moveR == horse.r && moveC == horse.c){
+                moveLocCnt++;
+            }
         }
-        max = Math.max(max, h.height);
 
-        System.out.println("[[[horses = " + horses);
+        // 말 위치 변경
+        for(Horse horse : horses) {
+            if(curR == horse.r && curC == horse.c) {
+                horse.r = moveR;
+                horse.c = moveC;
+
+                reverse(horse, sameLocCnt, moveLocCnt);
+                max = Math.max(max, horse.height);
+            }
+        }
 
         return max >= 3;
+    }
+
+    // 빨간칸 : 업은 말 위치 변경
+    public static void reverse(Horse h, int sameLocCnt, int moveLocCnt){
+        // 빨간칸인 경우 업은 말 높이 변경
+        if (board[h.r][h.c] == 1) {
+            h.height = sameLocCnt - h.height - 1;
+        }
+
+        // 이동할 칸에 말들이 있는 경우 그 수만큼 높이 올리기
+        if(moveLocCnt > 0) {
+            h.height += moveLocCnt;
+        }
     }
 
     static class Horse {
