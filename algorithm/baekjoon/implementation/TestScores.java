@@ -13,7 +13,7 @@
 A
 */
 
-package algorithm.baekjoon;
+package algorithm.baekjoon.implementation;
 
 import java.util.Scanner;
 

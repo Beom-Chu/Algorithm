@@ -24,7 +24,7 @@
 
  
  */
-package algorithm.baekjoon;
+package algorithm.baekjoon.implementation;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

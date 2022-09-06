@@ -134,7 +134,7 @@ A, D, F, G가 이동하고, 이동하려는 칸에 말이 E, C, B로 있는 경�
 예제 출력 6
 9
  */
-package algorithm.baekjoon;
+package algorithm.baekjoon.implementation;
 
 import java.io.BufferedReader;
 import java.io.IOException;

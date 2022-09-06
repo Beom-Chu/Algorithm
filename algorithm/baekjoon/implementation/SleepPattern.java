@@ -69,7 +69,7 @@ D : Mon, Tue, Wed, Thu, Fri
 
  */
 
-package algorithm.baekjoon;
+package algorithm.baekjoon.implementation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
