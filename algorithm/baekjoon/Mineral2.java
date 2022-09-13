@@ -165,6 +165,10 @@ public class Mineral2 {
                 }
             }
         }
+        
+        for(boolean[] c : cave) {
+            System.out.println("[[[Arrays.toString(c) = " + Arrays.toString(c));
+        }
 
         Queue<Position> connectedMinerals = new LinkedList<>();
 
@@ -178,18 +182,28 @@ public class Mineral2 {
         }
 
         for(Position p : connectedMinerals) {
-            System.out.println("r,c = "+ p.r +","+ p.c +"[[[check(p) = " + checkFloor(p));
-            if(checkFloor(p)) {
-                // TODO : 바닥이 아닌걸 체크 후 클러스터를 아래로 떨어뜨리는 로직 필요
+
+            int emptySize = checkEmpty(p);
+            System.out.println("r,c = "+ p.r +","+ p.c +"[[[checkEmpty(p) = " + emptySize);
+
+            if(emptySize > 0) {
+                drop(p, emptySize);
             }
         }
     }
 
-    /* 바닥에 붙어있는지 체크 */
-    static boolean checkFloor(Position p) {
+    /* 클러스터를 아래로 이동 */
+    static void drop(Position p, int emptySize) {
 
-        boolean[][] visit = cave.clone();
-        boolean isFloor = false;
+    }
+
+    /* 떨어질수 있는 아래의 빈 공간 사이즈 구하기 */
+    static int checkEmpty(Position p) {
+
+        // TODO : Deep Copy 로 바꿔서..
+        boolean[][] visit = Arrays.copyOf(cave, R);
+
+        int emptyH = R;
 
         Queue<Position> que = new LinkedList<>();
         que.add(p);
@@ -197,9 +211,34 @@ public class Mineral2 {
         while(!que.isEmpty()) {
             Position currentP = que.poll();
 
+            System.out.println("[[[currentP = " + currentP);
+
             if(currentP.r == R - 1) {
-                isFloor = true;
-                break;
+                emptyH = 0;
+            }
+
+            int tempR = currentP.r;
+            int size = 0;
+            while(tempR < R - 1 && emptyH != 0){
+                tempR++;
+
+                for(boolean[] c : cave) {
+                    System.out.println("checkEmpty cave = " + Arrays.toString(c));
+                }
+
+                System.out.println("[[[tempR , currentP.c = " + tempR +", "+ currentP.c + " = " + cave[tempR][currentP.c]);
+
+                if(cave[tempR][currentP.c]) {
+                    break;
+                } else {
+                    size++;
+                }
+            }
+
+            System.out.println("[[[size = " + size);
+
+            if(size != 0) {
+                emptyH = Math.min(emptyH, size);
             }
 
             for (int i = 0; i < 4; i++) {
@@ -212,7 +251,7 @@ public class Mineral2 {
             }
         }
 
-        return isFloor;
+        return emptyH;
     }
 
     static class Position {
@@ -222,6 +261,14 @@ public class Mineral2 {
         public Position(int r, int c) {
             this.r = r;
             this.c = c;
+        }
+
+        @Override
+        public String toString() {
+            return "Position{" +
+                    "r=" + r +
+                    ", c=" + c +
+                    '}';
         }
     }
 }
