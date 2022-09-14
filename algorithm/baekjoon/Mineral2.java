@@ -101,10 +101,7 @@ import javax.swing.text.Position;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Mineral2 {
 
@@ -183,75 +180,98 @@ public class Mineral2 {
 
         for(Position p : connectedMinerals) {
 
-            int emptySize = checkEmpty(p);
-            System.out.println("r,c = "+ p.r +","+ p.c +"[[[checkEmpty(p) = " + emptySize);
+            checkEmpty(p);
 
-            if(emptySize > 0) {
-                drop(p, emptySize);
-            }
+        }
+
+        for(boolean[] c : cave) {
+            System.out.println("[[[Arrays.toString(c) = " + Arrays.toString(c));
         }
     }
 
     /* 클러스터를 아래로 이동 */
-    static void drop(Position p, int emptySize) {
-
+    static void drop(List<Position> cluster, int emptySize) {
+        System.out.println("[[[cluster = " + cluster);
+        for(Position p : cluster) {
+            cave[p.r][p.c] = false;
+        }
+        for(Position p : cluster) {
+            System.out.println("[[[(p.r + emptySize), p.c  = " + (p.r + emptySize) + ", " + p.c );
+            cave[p.r + emptySize][p.c] = true;
+        }
     }
 
     /* 떨어질수 있는 아래의 빈 공간 사이즈 구하기 */
-    static int checkEmpty(Position p) {
+    static int checkEmpty(Position targetP) {
 
-        // TODO : Deep Copy 로 바꿔서..
-        boolean[][] visit = Arrays.copyOf(cave, R);
+        boolean[][] visit = copyArray(cave);
 
-        int emptyH = R;
-
+        List<Position> cluster = new ArrayList<>();
         Queue<Position> que = new LinkedList<>();
-        que.add(p);
+        cluster.add(targetP);
+        que.add(targetP);
+        visit[targetP.r][targetP.c] = false;
 
         while(!que.isEmpty()) {
             Position currentP = que.poll();
-
-            System.out.println("[[[currentP = " + currentP);
-
-            if(currentP.r == R - 1) {
-                emptyH = 0;
-            }
-
-            int tempR = currentP.r;
-            int size = 0;
-            while(tempR < R - 1 && emptyH != 0){
-                tempR++;
-
-                for(boolean[] c : cave) {
-                    System.out.println("checkEmpty cave = " + Arrays.toString(c));
-                }
-
-                System.out.println("[[[tempR , currentP.c = " + tempR +", "+ currentP.c + " = " + cave[tempR][currentP.c]);
-
-                if(cave[tempR][currentP.c]) {
-                    break;
-                } else {
-                    size++;
-                }
-            }
-
-            System.out.println("[[[size = " + size);
-
-            if(size != 0) {
-                emptyH = Math.min(emptyH, size);
-            }
 
             for (int i = 0; i < 4; i++) {
                 int nextR = currentP.r + rlud[i][0];
                 int nextC = currentP.c + rlud[i][1];
                 if(nextR >= 0 && nextR < R && nextC >= 0 && nextC < C && visit[nextR][nextC]) {
                     visit[nextR][nextC] = false;
-                    que.add(new Position(nextR, nextC));
+                    Position nextP = new Position(nextR, nextC);
+                    que.add(nextP);
+                    cluster.add(nextP);
                 }
             }
         }
 
-        return emptyH;
+        //각 클러스터를 구한 후 가장 밑에 있는 미내랄의 아래 빈 공간 구하기
+        int[] arrayC = cluster.stream().mapToInt(p -> p.c).distinct().toArray();
+
+        int emptyH = R;
+
+        for(int idxC : arrayC) {
+            Position bottomP = cluster.stream().filter(p -> p.c == idxC).max(Comparator.comparingInt(o -> o.r)).get();
+
+            int tempR = bottomP.r;
+            int size = 0;
+
+            while(tempR < R - 1 && emptyH != 0){
+                tempR++;
+
+                if(cave[tempR][bottomP.c]) {
+                    break;
+                } else {
+                    size++;
+                }
+            }
+
+            if(size != 0) {
+                emptyH = Math.min(emptyH, size);
+            }
+        }
+
+        emptyH = emptyH == R ? 0 : emptyH;
+
+        System.out.println("[[[emptyH = " + emptyH);
+
+        for(boolean[] c : cave) {
+            System.out.println("[[[before Drop = " + Arrays.toString(c));
+        }
+
+        drop(cluster, emptyH);
+
+        return 0;
+    }
+
+    static boolean[][] copyArray(boolean[][] arrays) {
+        boolean[][] result = new boolean[arrays.length][arrays[0].length];
+        for (int i = 0; i < result.length; i++) {
+           result[i] = arrays[i].clone();
+        }
+        return result;
     }
 
     static class Position {
