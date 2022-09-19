@@ -97,7 +97,6 @@ xx.xx.
  */
 package algorithm.baekjoon;
 
-import javax.swing.text.Position;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -106,7 +105,8 @@ import java.util.*;
 public class Mineral2 {
 
     static int R, C;
-    static boolean[][] cave;
+    static String[] cave;
+    /* 상하좌우 이동 좌표 */
     static int[][] rlud = {{0, 1},{0, -1},{1, 0},{-1, 0}};
 
     public static void main(String[] args) throws IOException {
@@ -115,24 +115,19 @@ public class Mineral2 {
 
         R = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
-        cave = new boolean[R][C];
+        cave = new String[R];
 
         for (int i = 0; i < R; i++) {
-            String s = reader.readLine();
-            for (int j = 0; j < C; j++) {
-                if(s.charAt(j) == 'x') {
-                    cave[i][j] = true;
-                }
-            }
+            cave[i] = reader.readLine();
         }
 
         int N = Integer.parseInt(reader.readLine());
         int[] height = new int[N];
         StringTokenizer st2 = new StringTokenizer(reader.readLine());
         for (int i = 0; i < N; i++) {
+            /* 막대기 던지는 높이 */
             height[i] = Integer.parseInt(st2.nextToken());
         }
-
 
         for (int i = 0; i < height.length; i++) {
             attack(height[i], i % 2 == 0);
@@ -147,24 +142,20 @@ public class Mineral2 {
 
         if(direction) {
             for (int i = 0; i < C; i++) {
-                if(cave[attackR][i]) {
+                if(cave[attackR].charAt(i) == 'x') {
+                    cave[attackR] = replaceString(cave[attackR],'.', i);
                     attackC = i;
-                    cave[attackR][i] = false;
                     break;
                 }
             }
         } else {
             for (int i = C - 1; i >= 0 ; i--) {
-                if(cave[attackR][i]) {
+                if(cave[attackR].charAt(i) == 'x') {
+                    cave[attackR] = replaceString(cave[attackR], '.', i);
                     attackC = i;
-                    cave[attackR][i] = false;
                     break;
                 }
             }
-        }
-        
-        for(boolean[] c : cave) {
-            System.out.println("[[[Arrays.toString(c) = " + Arrays.toString(c));
         }
 
         Queue<Position> connectedMinerals = new LinkedList<>();
@@ -173,38 +164,24 @@ public class Mineral2 {
         for (int i = 0; i < 4; i++) {
             int connectR = attackR + rlud[i][0];
             int connectC = attackC + rlud[i][1];
-            if(connectR >= 0 && connectR < R && connectC >= 0 && connectC < C && cave[connectR][connectC]) {
+            if(connectR >= 0 && connectR < R && connectC >= 0 && connectC < C && cave[connectR].charAt(connectC) == 'x') {
                 connectedMinerals.add(new Position(connectR, connectC));
             }
         }
 
         for(Position p : connectedMinerals) {
-
-            checkEmpty(p);
-
+            drop(p);
         }
 
-        for(boolean[] c : cave) {
-            System.out.println("[[[Arrays.toString(c) = " + Arrays.toString(c));
+        for(String c : cave) {
+            System.out.println(c);
         }
     }
 
-    /* 클러스터를 아래로 이동 */
-    static void drop(List<Position> cluster, int emptySize) {
-        System.out.println("[[[cluster = " + cluster);
-        for(Position p : cluster) {
-            cave[p.r][p.c] = false;
-        }
-        for(Position p : cluster) {
-            System.out.println("[[[(p.r + emptySize), p.c  = " + (p.r + emptySize) + ", " + p.c );
-            cave[p.r + emptySize][p.c] = true;
-        }
-    }
+    /* 떨어질수 있는 아래의 빈 공간 사이즈 구해서 떨어트리기 */
+    static void drop(Position targetP) {
 
-    /* 떨어질수 있는 아래의 빈 공간 사이즈 구하기 */
-    static int checkEmpty(Position targetP) {
-
-        boolean[][] visit = copyArray(cave);
+        boolean[][] visit = makeVisit(cave);
 
         List<Position> cluster = new ArrayList<>();
         Queue<Position> que = new LinkedList<>();
@@ -241,35 +218,40 @@ public class Mineral2 {
             while(tempR < R - 1 && emptyH != 0){
                 tempR++;
 
-                if(cave[tempR][bottomP.c]) {
+                if(cave[tempR].charAt(bottomP.c) == 'x') {
                     break;
                 } else {
                     size++;
                 }
             }
-
-            if(size != 0) {
-                emptyH = Math.min(emptyH, size);
-            }
-        }
-
-        emptyH = emptyH == R ? 0 : emptyH;
-
-        System.out.println("[[[emptyH = " + emptyH);
-
-        for(boolean[] c : cave) {
-            System.out.println("[[[before Drop = " + Arrays.toString(c));
+            emptyH = Math.min(emptyH, size);
         }
 
         drop(cluster, emptyH);
-
-        return 0;
     }
 
-    static boolean[][] copyArray(boolean[][] arrays) {
-        boolean[][] result = new boolean[arrays.length][arrays[0].length];
+    private static String replaceString(String s, char c, int i) {
+        StringBuilder sb = new StringBuilder(s);
+        sb.setCharAt(i, c);
+        return sb.toString();
+    }
+
+    /* 클러스터를 아래로 이동 */
+    static void drop(List<Position> cluster, int emptySize) {
+        for(Position p : cluster) {
+            cave[p.r] = replaceString(cave[p.r], '.', p.c);
+        }
+        for(Position p : cluster) {
+            cave[p.r + emptySize] = replaceString(cave[p.r + emptySize], 'x', p.c);
+        }
+    }
+
+    static boolean[][] makeVisit(String[] cave) {
+        boolean[][] result = new boolean[cave.length][cave[0].length()];
         for (int i = 0; i < result.length; i++) {
-           result[i] = arrays[i].clone();
+            for (int j = 0; j < result[i].length; j++) {
+                result[i][j] = cave[i].charAt(j) == 'x';
+            }
         }
         return result;
     }
@@ -281,14 +263,6 @@ public class Mineral2 {
         public Position(int r, int c) {
             this.r = r;
             this.c = c;
-        }
-
-        @Override
-        public String toString() {
-            return "Position{" +
-                    "r=" + r +
-                    ", c=" + c +
-                    '}';
         }
     }
 }
