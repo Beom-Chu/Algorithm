@@ -1,5 +1,5 @@
 /*
-앨범정리
+앨범정리[20541]
 시간 제한	메모리 제한	제출	정답	맞힌 사람	정답 비율
 2 초	512 MB	502	105	79	22.191%
 문제
@@ -214,7 +214,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 public class OrganizeAlbum {
 
@@ -231,25 +233,42 @@ public class OrganizeAlbum {
 
         for(String[] command : commands) {
             System.out.println("[[[command = " + command[0]);
+            System.out.println("current.name:" + current.name +",albumsize:" + current.albums.size());
 
             switch (command[0]) {
                 case "mkalb" :
                     current.makeAlbum(command[1]);
                     break;
                 case "rmalb" :
-
                     switch (command[1]) {
                         case "-1" :
-
+                            if(current.albums.size() > 0) {
+                                Album delAlbum = current.albums.stream().min(Comparator.comparing(o -> o.name)).get();
+                                System.out.println(delAlbum.albums.size()+" "+delAlbum.photos.size());
+                                current.albums.remove(delAlbum);
+                            }
                             break;
                         case "0" :
-
+                            if(current.albums.size() > 0) {
+                                int photoSum = current.albums.stream().mapToInt(a -> a.photos.size()).sum();
+                                System.out.println(current.albums.size()+" "+photoSum);
+                                current.albums.clear();
+                            }
                             break;
                         case "1" :
-
+                            if(current.albums.size() > 0) {
+                                Album delAlbum = current.albums.stream().max(Comparator.comparing(o -> o.name)).get();
+                                System.out.println(delAlbum.albums.size()+" "+delAlbum.photos.size());
+                                current.albums.remove(delAlbum);
+                            }
                             break;
                         default:
-
+                            Optional<Album> optDelAlbum = current.albums.stream().filter(o -> o.name.equals(command[1])).findAny();
+                            if(optDelAlbum.isPresent()) {
+                                Album delAlbum = optDelAlbum.get();
+                                System.out.println(delAlbum.albums.size()+" "+delAlbum.photos.size());
+                                current.albums.remove(delAlbum);
+                            }
                             break;
                     }
 
@@ -258,7 +277,31 @@ public class OrganizeAlbum {
                     current.makePhoto(command[1]);
                     break;
                 case "delete" :
-
+                    switch (command[1]) {
+                        case "-1" :
+                            if(current.photos.size() > 0) {
+                                String delPhoto = current.photos.stream().min(Comparator.naturalOrder()).get();
+                                System.out.println(1);
+                                current.photos.remove(delPhoto);
+                            }
+                            break;
+                        case "0" :
+                            if(current.photos.size() > 0) {
+                                System.out.println(current.photos.size());
+                                current.photos.clear();
+                            }
+                            break;
+                        case "1" :
+                            if(current.photos.size() > 0) {
+                                String delPhoto = current.photos.stream().max(Comparator.naturalOrder()).get();
+                                System.out.println(1);
+                                current.photos.remove(delPhoto);
+                            }
+                            break;
+                        default:
+                            //TODO
+                            break;
+                    }
                     break;
                 case "ca" :
 
@@ -272,8 +315,8 @@ public class OrganizeAlbum {
     static class Album {
 
         String name;
-        PriorityQueue<Album> albums = new PriorityQueue<>(Comparator.comparing(o -> o.name));
-        PriorityQueue<String> photos = new PriorityQueue<>(Comparator.naturalOrder());
+        List<Album> albums = new LinkedList<>();
+        List<String> photos = new LinkedList<>();
         Album parentAlbum;
 
         Album(String name, Album parentAlbum){
@@ -282,11 +325,11 @@ public class OrganizeAlbum {
         }
 
         boolean existsAlbum(String name) {
-            return albums.stream().noneMatch(o -> o.name.equals(name));
+            return albums.stream().anyMatch(o -> o.name.equals(name));
         }
 
         boolean existsPhoto(String name) {
-            return photos.stream().noneMatch(o -> o.equals(name));
+            return photos.stream().anyMatch(o -> o.equals(name));
         }
 
         void makeAlbum(String name) {
