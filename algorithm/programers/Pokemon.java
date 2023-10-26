@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -69,10 +71,19 @@ public class Pokemon {
         return Math.min(nums.length / 2, Arrays.stream(nums).boxed().collect(Collectors.toSet()).size());
     }
 
+    /** HashMap 사용 */
+    public int solution3(int[] nums) {
+
+        Map<Integer, Integer> pokemonNumber = new HashMap<>();
+        Arrays.stream(nums).forEach(o -> pokemonNumber.put(o, pokemonNumber.getOrDefault(o, 0) + 1));
+
+        return Math.min(nums.length / 2, pokemonNumber.size());
+    }
+
     @Test
     public void test() {
-        Assertions.assertEquals(2, solution2(new int[]{3,1,2,3}));
-        Assertions.assertEquals(3, solution2(new int[]{3,3,3,2,2,4}));
-        Assertions.assertEquals(2, solution2(new int[]{3,3,3,2,2,2}));
+        Assertions.assertEquals(2, solution3(new int[]{3,1,2,3}));
+        Assertions.assertEquals(3, solution3(new int[]{3,3,3,2,2,4}));
+        Assertions.assertEquals(2, solution3(new int[]{3,3,3,2,2,2}));
     }
 }
