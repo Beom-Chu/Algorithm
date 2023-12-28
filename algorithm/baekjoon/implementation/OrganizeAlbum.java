@@ -213,14 +213,15 @@ package algorithm.baekjoon.implementation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class OrganizeAlbum {
 
+    static Integer removeAlbCnt, removePhoCnt;
     public static void main(String[] args) throws IOException {
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(reader.readLine());
         String[][] commands = new String[N][2];
@@ -228,124 +229,129 @@ public class OrganizeAlbum {
             commands[i] = reader.readLine().split(" ");
         }
 
-        Album root = new Album("album", null);
-        Album current = root;
+        TreeMap<Path, LinkedList<String>> albums = new TreeMap<>();
+        Path current = setRoot();
+        albums.put(current, new LinkedList<>());
 
         for(String[] command : commands) {
-            System.out.println("[[[command = " + command[0]);
-            System.out.println("current.name:" + current.name +",albumsize:" + current.albums.size());
 
-            switch (command[0]) {
-                case "mkalb" :
-                    current.makeAlbum(command[1]);
-                    break;
-                case "rmalb" :
-                    switch (command[1]) {
-                        case "-1" :
-                            if(current.albums.size() > 0) {
-                                Album delAlbum = current.albums.stream().min(Comparator.comparing(o -> o.name)).get();
-                                System.out.println(delAlbum.albums.size()+" "+delAlbum.photos.size());
-                                current.albums.remove(delAlbum);
-                            }
-                            break;
-                        case "0" :
-                            if(current.albums.size() > 0) {
-                                int photoSum = current.albums.stream().mapToInt(a -> a.photos.size()).sum();
-                                System.out.println(current.albums.size()+" "+photoSum);
-                                current.albums.clear();
-                            }
-                            break;
-                        case "1" :
-                            if(current.albums.size() > 0) {
-                                Album delAlbum = current.albums.stream().max(Comparator.comparing(o -> o.name)).get();
-                                System.out.println(delAlbum.albums.size()+" "+delAlbum.photos.size());
-                                current.albums.remove(delAlbum);
-                            }
-                            break;
-                        default:
-                            Optional<Album> optDelAlbum = current.albums.stream().filter(o -> o.name.equals(command[1])).findAny();
-                            if(optDelAlbum.isPresent()) {
-                                Album delAlbum = optDelAlbum.get();
-                                System.out.println(delAlbum.albums.size()+" "+delAlbum.photos.size());
-                                current.albums.remove(delAlbum);
-                            }
-                            break;
+            if(Objects.equals(command[0], "mkalb")) {
+
+                Optional<Map.Entry<Path, LinkedList<String>>> optSameAlbum = checkExistsAlbum(albums, current, command[1]);
+                if(optSameAlbum.isPresent()) {
+                    System.out.println("duplicated album name");
+                } else {
+                    albums.put(current.resolve(command[1]), new LinkedList<>());
+                }
+
+            } else if(Objects.equals(command[0], "rmalb")){
+
+                removeAlbCnt = 0;
+                removePhoCnt = 0;
+                TreeMap<Path, LinkedList<String>> subAlbums = findSubAlbums(albums, current);
+
+                if(!subAlbums.isEmpty()) {
+                    if (Objects.equals(command[1], "-1")) {
+                        removeAlbum(albums, subAlbums.firstKey());
+                    } else if (Objects.equals(command[1], "0")) {
+                        for (Map.Entry<Path, LinkedList<String>> e : subAlbums.entrySet()) {
+                            removeAlbum(albums, e.getKey());
+                        }
+                    } else if (Objects.equals(command[1], "1")) {
+                        removeAlbum(albums, subAlbums.lastKey());
+                    } else {
+                        removeAlbum(albums, current.resolve(command[1]));
                     }
+                }
 
-                    break;
-                case "insert" :
-                    current.makePhoto(command[1]);
-                    break;
-                case "delete" :
-                    switch (command[1]) {
-                        case "-1" :
-                            if(current.photos.size() > 0) {
-                                String delPhoto = current.photos.stream().min(Comparator.naturalOrder()).get();
-                                System.out.println(1);
-                                current.photos.remove(delPhoto);
-                            }
-                            break;
-                        case "0" :
-                            if(current.photos.size() > 0) {
-                                System.out.println(current.photos.size());
-                                current.photos.clear();
-                            }
-                            break;
-                        case "1" :
-                            if(current.photos.size() > 0) {
-                                String delPhoto = current.photos.stream().max(Comparator.naturalOrder()).get();
-                                System.out.println(1);
-                                current.photos.remove(delPhoto);
-                            }
-                            break;
-                        default:
-                            //TODO
-                            break;
+                System.out.println(removeAlbCnt + " " + removePhoCnt);
+
+            } else if(Objects.equals(command[0], "insert")){
+                List<String> currentAlbum = albums.get(current);
+                if(currentAlbum.contains(command[1])) {
+                    System.out.println("duplicated photo name");
+                } else {
+                    currentAlbum.add(command[1]);
+                }
+
+            } else if(Objects.equals(command[0], "delete")){
+                Integer deletePhoCnt = 0;
+                LinkedList<String> photos = albums.get(current);
+
+                if(photos.size() > 0) {
+                    if (Objects.equals(command[1], "-1")) {
+                        photos.sort(Comparator.naturalOrder());
+                        photos.removeFirst();
+                        deletePhoCnt++;
+                    } else if (Objects.equals(command[1], "0")) {
+                        deletePhoCnt += photos.size();
+                        photos.clear();
+                    } else if (Objects.equals(command[1], "1")) {
+                        photos.sort(Comparator.naturalOrder());
+                        photos.removeLast();
+                        deletePhoCnt++;
+                    } else {
+                        if(photos.remove(command[1])) {
+                            deletePhoCnt++;
+                        }
                     }
-                    break;
-                case "ca" :
+                }
+                System.out.println(deletePhoCnt);
 
-                    break;
+            } else if(Objects.equals(command[0], "ca")){
+                if(Objects.equals(command[1], "..")) {
+                    if(current.getParent() != null) {
+                        current = current.getParent();
+                    }
+                } else if(Objects.equals(command[1], "/")) {
+                    current = setRoot();
+                } else {
+                    Optional<Map.Entry<Path, LinkedList<String>>> optExistsAlbum = checkExistsAlbum(albums, current, command[1]);
+                    if(optExistsAlbum.isPresent()) {
+                        current = optExistsAlbum.get().getKey();
+                    }
+                }
+                System.out.println(current.getFileName());
             }
         }
-
-        System.out.println("[[[root = " + root);
     }
 
-    static class Album {
+    /** Root 설정 */
+    private static Path setRoot() {
+        return Path.of("album");
+    }
 
-        String name;
-        List<Album> albums = new LinkedList<>();
-        List<String> photos = new LinkedList<>();
-        Album parentAlbum;
+    /** 앨범 삭제 */
+    private static void removeAlbum(TreeMap<Path, LinkedList<String>> albums, Path key) {
+        // 삭제 대상 앨범의 하위 앨범 모두 찾기
+        Map<Path, LinkedList<String>> rmAlbums = albums.entrySet().stream()
+                .filter(o -> o.getKey().startsWith(key))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        Album(String name, Album parentAlbum){
-            this.name = name;
-            this.parentAlbum = parentAlbum;
+        for(Map.Entry<Path, LinkedList<String>> e : rmAlbums.entrySet()) {
+            removeAlbCnt++;
+            removePhoCnt += e.getValue().size();
+            albums.remove(e.getKey());
         }
+    }
 
-        boolean existsAlbum(String name) {
-            return albums.stream().anyMatch(o -> o.name.equals(name));
-        }
+    /** 앨범 존재 여부 확인 */
+    private static Optional<Map.Entry<Path, LinkedList<String>>> checkExistsAlbum(Map<Path, LinkedList<String>> albums, Path current, String albumName) {
+        return albums.entrySet().stream()
+                .filter(o -> o.getKey().equals(current.resolve(albumName)))
+                .findAny();
+    }
 
-        boolean existsPhoto(String name) {
-            return photos.stream().anyMatch(o -> o.equals(name));
-        }
-
-        void makeAlbum(String name) {
-            if(existsAlbum(name)) {
-                System.out.println("duplicated album name");
-            } else {
-                albums.add(new Album(name, this));
-            }
-        }
-
-        void makePhoto(String name) {
-            if(existsPhoto(name)) {
-                System.out.println("duplicated photo name");
-            } else {
-                photos.add(name);
-            }
-        }
+    /** 하위 앨범 찾기 (하위 중 최상위 앨범들만) */
+    private static TreeMap<Path, LinkedList<String>> findSubAlbums(TreeMap<Path, LinkedList<String>> albums, Path current) {
+        // 하위 앨범 중 최상위 Depth 구하기
+        Integer minNameCnt = albums.entrySet().stream()
+                .filter(o -> o.getKey().startsWith(current) && !o.getKey().equals(current))
+                .min(Comparator.comparingInt(o -> o.getKey().getNameCount()))
+                .map(o -> o.getKey().getNameCount())
+                .orElse(0);
+        return albums.entrySet().stream()
+                .filter(o -> o.getKey().startsWith(current) && !o.getKey().equals(current) && o.getKey().getNameCount() == minNameCnt)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o1,o2)->o1, TreeMap::new));
     }
 }
