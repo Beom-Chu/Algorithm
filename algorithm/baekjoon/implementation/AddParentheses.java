@@ -54,7 +54,7 @@
 예제 출력 6
 32
 */
-package algorithm.baekjoon;
+package algorithm.baekjoon.implementation;
 
 import java.io.IOException;
 import java.util.LinkedList;
