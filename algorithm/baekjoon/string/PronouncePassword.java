@@ -47,7 +47,7 @@ end
 <eep> is acceptable.
 <houctuh> is acceptable.
 */
-package algorithm.baekjoon;
+package algorithm.baekjoon.string;
 
 import java.io.BufferedReader;
 import java.io.IOException;
