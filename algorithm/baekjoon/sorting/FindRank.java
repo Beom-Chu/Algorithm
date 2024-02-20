@@ -70,6 +70,16 @@ public class FindRank {
 
         int rank = -1;
 
+        if(N == 0) { // 등록 점수 없으면 1
+            System.out.println(1);
+            return;
+        } else if(scores.size() >= P) { // 랭킹리스트 마지막보다 신규 점수가 작거나 같으면 -1
+            if(scores.get(P - 1) >= newScore) {
+                System.out.println(rank);
+                return;
+            }
+        }
+
         for (int i = 0; i < scores.size() && i < P; i++) {
             if(scores.get(i) <= newScore) {
                 rank = i + 1;
@@ -77,7 +87,18 @@ public class FindRank {
             }
         }
 
-        System.out.println("[[[scores = " + scores);
-        System.out.println("[[[rank = " + rank);
+        if(rank == -1 && scores.size() < P) {
+            System.out.println(scores.size() + 1);
+            return;
+        }
+
+        System.out.println(rank);
     }
 }
+/*
+10 1 11
+10 9 8 7 6 5 4 3 1 1
+
+9 5 10
+10 10 10 9 9 8 7 6 6
+ */
