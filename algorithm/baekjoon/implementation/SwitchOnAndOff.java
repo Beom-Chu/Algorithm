@@ -60,10 +60,7 @@ package algorithm.baekjoon.implementation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class SwitchOnAndOff {
     /*
@@ -85,23 +82,28 @@ public class SwitchOnAndOff {
             students.add(new Student(reader.readLine()));
         }
 
-        System.out.println("[[[Arrays.toString(switches) = " + Arrays.toString(switches));
-//        System.out.println("[[[students = " + students);
-
         for (Student student : students) {
             switches = on(switches, student);
-            System.out.println("[[[Arrays.toString(switches) = " + Arrays.toString(switches));
         }
+
+        StringJoiner joiner = new StringJoiner(" ");
+        for (int s : switches) {
+            joiner.add(String.valueOf(s));
+        }
+
+        System.out.println(joiner);
     }
 
+    // 학생 처리
     private static int[] on(int[] switches, Student student) {
         if (student.gender == 1) {
             return onMale(switches, student.number);
         } else {
-            return onFemale(switches, student.number);
+            return onFemale(switches, student.number - 1);
         }
     }
 
+    // 남학생 처리
     private static int[] onMale(int[] switches, int number) {
         for (int i = 0; i < switches.length; i++) {
             if((i + 1) % number == 0) {
@@ -111,11 +113,26 @@ public class SwitchOnAndOff {
         return switches;
     }
 
+    // 여학생 처리
     private static int[] onFemale(int[] switches, int number) {
-        //todo : 할차례
+        switches[number] = change(switches[number]);
+        int left = number;
+        int right = number;
+        while(left > 0 && right < switches.length - 1) {
+            left--;
+            right++;
+            if(switches[left] == switches[right]) {
+               switches[left] = change(switches[left]);
+               switches[right] = change(switches[right]);
+            } else {
+                break;
+            }
+        }
+
         return switches;
     }
 
+    // 스위치 변경
     private static int change(int i) {
         return Math.abs(i - 1);
     }
