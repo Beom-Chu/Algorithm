@@ -54,58 +54,90 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CrossCountry {
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        int T = Integer.parseInt(reader.readLine());
-        List<TestCase> testCaseList = new ArrayList<>();
 
-        for (int i = 0; i < T; i++) {
-            int playerCount = Integer.parseInt(reader.readLine());
-            List<Integer> teamNumbers = new ArrayList<>();
-            StringTokenizer st = new StringTokenizer(reader.readLine());
-            for (int j = 0; j < playerCount; j++) {
-                teamNumbers.add(Integer.parseInt(st.nextToken()));
-            }
-            testCaseList.add(new TestCase(playerCount, teamNumbers));
-        }
+        List<TestCase> testCaseList = getTestCase(reader);
 
         for (TestCase tc : testCaseList) {
             solution(tc);
         }
     }
 
-    private static void solution(TestCase tc) {
+    private static List<TestCase> getTestCase(BufferedReader reader) throws IOException {
+        List<TestCase> testCaseList = new ArrayList<>();
 
+        int T = Integer.parseInt(reader.readLine());
+        for (int i = 0; i < T; i++) {
+            int playerCount = Integer.parseInt(reader.readLine());
+            Integer[] teamNumbers = Arrays.stream(reader.readLine().split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .boxed()
+                    .toArray(Integer[]::new);
+            testCaseList.add(new TestCase(playerCount, teamNumbers));
+        }
+        return testCaseList;
+    }
+
+    private static void solution(TestCase tc) {
+        HashMap<Integer, Team> teams = new HashMap<>();
+        Map<Integer, Long> playerCountByTeam = getPlayerCountByTeam(tc.teamNumbers);
+
+        int score = 0;
+        for (Integer teamNumber : tc.teamNumbers) {
+            if (playerCountByTeam.get(teamNumber) > 5) {
+                score++;
+                if (teams.containsKey(teamNumber)) {
+                    Team team = teams.get(teamNumber);
+                    if (team.count < 4) {
+                        team.score += score;
+                    } else if (team.count == 4) {
+                        team.fifthScore = score;
+                    }
+                    team.count++;
+                } else {
+                    teams.put(teamNumber, new Team(teamNumber, 1, score));
+                }
+            }
+        }
+
+        System.out.println(getWinningTeam(teams));
+    }
+
+    private static int getWinningTeam(HashMap<Integer, Team> teams) {
+        return teams.values().stream()
+                .min((o1, o2) -> o1.score != o2.score ? o1.score - o2.score : o1.fifthScore - o2.fifthScore)
+                .get()
+                .teamNo;
+    }
+
+    private static Map<Integer, Long> getPlayerCountByTeam(Integer[] teamNumbers) {
+        return Arrays.stream(teamNumbers).collect(Collectors.groupingBy(n -> n, Collectors.counting()));
     }
 
     public static class TestCase {
         int playerCount;
-        List<Integer> teamNumbers;
+        Integer[] teamNumbers;
 
-        public TestCase(int playerCount, List<Integer> teamNumbers) {
+        public TestCase(int playerCount, Integer[] teamNumbers) {
             this.playerCount = playerCount;
             this.teamNumbers = teamNumbers;
         }
     }
 
     public static class Team {
+        int teamNo;
         int count;
         int score;
         int fifthScore;
 
-        public Team(int count, int score) {
+        public Team(int teamNo, int count, int score) {
+            this.teamNo = teamNo;
             this.count = count;
             this.score = score;
-        }
-
-        @Override
-        public String toString() {
-            return "Team{" +
-                    "score=" + score +
-                    ", count=" + count +
-                    '}';
         }
     }
 }
