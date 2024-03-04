@@ -41,7 +41,7 @@
 예제 출력 2
 3
  */
-package algorithm.baekjoon;
+package algorithm.baekjoon.math;
 
 import java.io.BufferedReader;
 import java.io.IOException;
