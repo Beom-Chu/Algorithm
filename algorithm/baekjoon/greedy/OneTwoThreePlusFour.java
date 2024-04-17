@@ -29,78 +29,39 @@
  */
 package algorithm.baekjoon.greedy;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.OutputStreamWriter;
 
 public class OneTwoThreePlusFour {
-    static List<Number> res;
+
+    static int[][] dp;
 
     public static void main(String[] args) throws IOException {
         int t = readInt();
         int[] nums = new int[t];
+        int max = 0;
         for (int i = 0; i < t; i++) {
             nums[i] = readInt();
+            max = Math.max(max, nums[i]) + 1;
+        }
+        dp = new int[max][4];
+
+        dp[1][1] = dp[2][1] = dp[2][2] = dp[3][1] = dp[3][2] = dp[3][3] = 1;
+
+        for (int i = 4; i < max; i++) {
+            dp[i][1] = dp[i - 1][1];
+            dp[i][2] = dp[i - 2][1] + dp[i - 2][2];
+            dp[i][3] = dp[i - 3][1] + dp[i - 3][2] + dp[i - 3][3];
         }
 
-        for (int num : nums) {
-            solution(num);
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
+        for (int i = 0; i < t; i++) {
+            writer.write(String.valueOf(dp[nums[i]][1] + dp[nums[i]][2] + dp[nums[i]][3]));
+            writer.newLine();
         }
-    }
-
-    private static void solution(int num) {
-        res = new ArrayList<>();
-        recursion(new Number(0,0,0), num);
-        System.out.println(res.size());
-        for (Number re : res) {
-            System.out.println(re);
-        }
-    }
-
-    private static void recursion(Number sum, int num) {
-
-        if (sum.getSum() == num) {
-            if(!res.contains(sum)) {
-                res.add(sum);
-            }
-            return;
-        } else if (sum.getSum() > num) {
-            return;
-        }
-        recursion(new Number(sum.one+1, sum.two, sum.three), num);
-        recursion(new Number(sum.one, sum.two+1, sum.three), num);
-        recursion(new Number(sum.one, sum.two, sum.three+1), num);
-    }
-
-    static class Number {
-        int one, two, three;
-
-        int getSum() {
-            return one + (2 * two) + (3 * three);
-        }
-
-        public Number(int one, int three, int two) {
-            this.one = one;
-            this.three = three;
-            this.two = two;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Number number = (Number) o;
-            return one == number.one && two == number.two && three == number.three;
-        }
-
-        @Override
-        public String toString() {
-            return "Number{" +
-                    "one=" + one +
-                    ", two=" + two +
-                    ", three=" + three +
-                    '}';
-        }
+        writer.flush();
+        writer.close();
     }
 
     public static int readInt() throws IOException {
