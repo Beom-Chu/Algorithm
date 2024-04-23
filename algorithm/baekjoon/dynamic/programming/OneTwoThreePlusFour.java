@@ -27,7 +27,7 @@
 8
 14
  */
-package algorithm.baekjoon.greedy;
+package algorithm.baekjoon.dynamic.programming;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
