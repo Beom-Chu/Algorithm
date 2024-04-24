@@ -70,13 +70,13 @@ public class Shortcut {
             int shotDis = readInt();
 
             if (to - from > shotDis) {
-                if (!shortcuts.containsKey(from)) {
-                    shortcuts.put(from, new HashMap<>());
+                if (!shortcuts.containsKey(to)) {
+                    shortcuts.put(to, new HashMap<>());
                 }
-                if (!shortcuts.get(from).containsKey(to)) {
-                    shortcuts.get(from).put(to, shotDis);
+                if (!shortcuts.get(to).containsKey(from)) {
+                    shortcuts.get(to).put(from, shotDis);
                 } else {
-                    shortcuts.get(from).put(to, Math.min(shotDis, shortcuts.get(from).get(to)));
+                    shortcuts.get(to).put(from, Math.min(shotDis, shortcuts.get(to).get(from)));
                 }
             }
         }
@@ -84,15 +84,24 @@ public class Shortcut {
         System.out.println("[[[shortcuts = " + shortcuts);
 
         for (int i = 0; i < d; i++) {
-            distance[i] = d;
+            distance[i] = i;
         }
-        distance[0] = 0;
 
         for (int i = 1; i < d; i++) {
             if (shortcuts.containsKey(i)) {
-
+                for (Map.Entry<Integer, Integer> e : shortcuts.get(i).entrySet()) {
+                    distance[i] = Math.min(distance[i], distance[e.getKey()] + e.getValue());
+                }
+            } else {
+                distance[i] = distance[i - 1] + 1;
             }
-            distance[i] = distance[i - 1] + 1;
+        }
+
+        for (int i = 0; i < distance.length; i++) {
+            System.out.print(distance[i] + " ");
+            if(i % 10 == 0) {
+                System.out.println();
+            }
         }
     }
 
