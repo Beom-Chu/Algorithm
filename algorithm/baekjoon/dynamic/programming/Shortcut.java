@@ -57,12 +57,13 @@ import java.util.*;
 public class Shortcut {
 
     static int[] distance;
+    static Map<Integer, Map<Integer, Integer>> shortcuts;
 
     public static void main(String[] args) throws IOException {
         int n = readInt();
         int d = readInt();
-        Map<Integer, Map<Integer, Integer>> shortcuts = new HashMap<>();
-        distance = new int[d];
+        shortcuts = new HashMap<>();
+        distance = new int[d + 1];
 
         for (int i = 0; i < n; i++) {
             int from = readInt();
@@ -81,30 +82,27 @@ public class Shortcut {
             }
         }
 
-        System.out.println("[[[shortcuts = " + shortcuts);
-
-        for (int i = 0; i < d; i++) {
-            distance[i] = i;
-        }
-
-        for (int i = 1; i < d; i++) {
-            if (shortcuts.containsKey(i)) {
-                for (Map.Entry<Integer, Integer> e : shortcuts.get(i).entrySet()) {
-                    distance[i] = Math.min(distance[i], distance[e.getKey()] + e.getValue());
-                }
-            } else {
-                distance[i] = distance[i - 1] + 1;
-            }
-        }
-
-        for (int i = 0; i < distance.length; i++) {
-            System.out.print(distance[i] + " ");
-            if(i % 10 == 0) {
-                System.out.println();
-            }
-        }
+        System.out.println(findDistance(d));
     }
 
+    static int findDistance(int n) {
+        if(n == 0) {
+            return 0;
+        }
+
+        if(distance[n] != 0) {
+            return distance[n];
+        }
+
+        distance[n] = findDistance(n - 1) + 1;
+
+        if(shortcuts.containsKey(n)) {
+            for (Map.Entry<Integer, Integer> e : shortcuts.get(n).entrySet()) {
+                distance[n] = Math.min(distance[n], distance[e.getKey()] + e.getValue());
+            }
+        }
+        return distance[n];
+    }
 
     public static int readInt() throws IOException {
         int chr, result = 0;
@@ -113,12 +111,3 @@ public class Shortcut {
         return result;
     }
 }
-
-/*
-5 150
-0 50 10
-50 100 10
-0 50 20
-100 151 10
-110 140 90
-*/
