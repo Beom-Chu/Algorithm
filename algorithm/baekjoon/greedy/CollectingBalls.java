@@ -74,49 +74,42 @@ import java.io.*;
 public class CollectingBalls {
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
 
         int n = Integer.parseInt(reader.readLine());
         String s = reader.readLine();
 
         char left = s.charAt(0);
         char right = s.charAt(s.length() - 1);
-        int result = n;
+
+        print(Math.min(
+                collecting(0, n, 1, left, s), // 왼쪽에서 오른쪽으로 체크
+                collecting(n - 1, -1, -1, right, s) // 오른쪽에서 왼쪽으로 체크
+        ));
+    }
+
+    private static int collecting(int from, int to, int add, char diff, String s) {
 
         boolean check = false;
-        int cnt = 0;
+        int cnt = 0, i = from;
 
-        for (int i = 0; i < n; i++) {
-            if (!check && left != s.charAt(i)) {
+        while (i != to) {
+            if (!check && diff != s.charAt(i)) {
                 check = true;
             }
             if (check) {
-                if (left == s.charAt(i)) {
+                if (diff == s.charAt(i)) {
                     cnt++;
                 }
             }
+            i += add;
         }
-        result = Math.min(result, cnt);
+        return cnt;
+    }
 
-        cnt = 0;
-        check = false;
-
-        for (int i = n - 1; i >= 0; i--) {
-            if (!check && right != s.charAt(i)) {
-                check = true;
-            }
-            if (check) {
-                if (right == s.charAt(i)) {
-                    cnt++;
-                }
-            }
-        }
-        result = Math.min(result, cnt);
-
+    private static void print(int result) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
         writer.write(result + "\n");
         writer.flush();
-
-        reader.close();
         writer.close();
     }
 }
