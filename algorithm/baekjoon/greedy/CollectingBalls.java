@@ -72,32 +72,36 @@ package algorithm.baekjoon.greedy;
 import java.io.*;
 
 public class CollectingBalls {
+    static int n;
+    static String s;
+
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-        int n = Integer.parseInt(reader.readLine());
-        String s = reader.readLine();
+        n = Integer.parseInt(reader.readLine());
+        s = reader.readLine();
 
-        char left = s.charAt(0);
-        char right = s.charAt(s.length() - 1);
-
-        print(Math.min(
-                collecting(0, n, 1, left, s), // 왼쪽에서 오른쪽으로 체크
-                collecting(n - 1, -1, -1, right, s) // 오른쪽에서 왼쪽으로 체크
-        ));
+        print(Math.min(getMoveBallCount('B'), getMoveBallCount('R')));
     }
 
-    private static int collecting(int from, int to, int add, char diff, String s) {
+    private static int getMoveBallCount(char color) {
+        return Math.min(
+                moveBall(0, n, 1, color), // 왼쪽에서 오른쪽으로 체크
+                moveBall(n - 1, -1, -1, color) // 오른쪽에서 왼쪽으로 체크
+        );
+    }
+
+    private static int moveBall(int from, int to, int add, char color) {
 
         boolean check = false;
         int cnt = 0, i = from;
 
         while (i != to) {
-            if (!check && diff != s.charAt(i)) {
+            if (!check && color != s.charAt(i)) {
                 check = true;
             }
             if (check) {
-                if (diff == s.charAt(i)) {
+                if (color == s.charAt(i)) {
                     cnt++;
                 }
             }
