@@ -39,13 +39,22 @@ package algorithm.baekjoon.bfs;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.*;
 
 public class ApartmentComplexNumbering {
+
+    static int n;
+    static char[][] map;
+    static boolean[][] visit;
+    static int[] addX = {0, 1, 0, -1};
+    static int[] addY = {1, 0, -1, 0};
+
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(reader.readLine());
-        char[][] map = new char[n][n];
+        n = Integer.parseInt(reader.readLine());
+        map = new char[n][n];
+        visit = new boolean[n][n];
+
         for (int i = 0; i < n; i++) {
             String s = reader.readLine();
             for (int j = 0; j < n; j++) {
@@ -53,8 +62,45 @@ public class ApartmentComplexNumbering {
             }
         }
 
-        System.out.println(Arrays.deepToString(map));
+        List<Integer> result = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (!visit[i][j]) {
+                    visit[i][j] = true;
+                    if (map[i][j] == '1') {
+                        result.add(bfs(i, j));
+                    }
+                }
+            }
+        }
+
+        result.sort(Comparator.naturalOrder());
+        System.out.println(result.size());
+        result.forEach(System.out::println);
     }
 
+    public static int bfs(int x, int y) {
+        Queue<int[]> q = new LinkedList<>();
+        q.add(new int[]{x, y});
+        visit[x][y] = true;
+        int count = 0;
 
+        while (!q.isEmpty()) {
+            int[] poll = q.poll();
+            int px = poll[0], py = poll[1];
+
+            for (int i = 0; i < 4; i++) {
+                int addPx = px + addX[i];
+                int addPy = py + addY[i];
+                if (addPx < n && addPx >= 0 && addPy < n && addPy >= 0
+                        && map[addPx][addPy] == '1' && !visit[addPx][addPy]) {
+                    q.add(new int[]{addPx, addPy});
+                    visit[addPx][addPy] = true;
+                }
+            }
+            count++;
+        }
+        return count;
+    }
 }
