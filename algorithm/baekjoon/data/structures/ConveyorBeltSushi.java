@@ -58,7 +58,7 @@
 예제 출력 2
 4
  */
-package algorithm.baekjoon.sliding.window;
+package algorithm.baekjoon.data.structures;
 
 import java.io.IOException;
 import java.util.HashSet;
